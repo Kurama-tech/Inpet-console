@@ -1,1 +1,7 @@
 @import '../node_modules/@patternfly/react-core/dist/styles/base.css'; 
+
+.font-face-gm {
+  font-family: "Inpet";
+  color: #ed1c24;
+ }
+ 

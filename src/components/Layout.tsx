@@ -12,32 +12,47 @@ import {
     NavList,
     Brand
   } from '@patternfly/react-core';
-  import Logo from '../logo.svg';
-
+  import './Layout.css';
 
   type NavigationBarProps = {
-    manifest: string;
+    Company: string;
+    setisNavO: () => void;
+    isNavO : boolean;
+
   };
   
-  const NavigationBar = ({ manifest }: NavigationBarProps) => {
-
-    const logo = (<Brand src='https://patternfly-react.surge.sh/images/logo.4189e7eb1a0741ea2b3b51b80d33c4cb.svg' alt="Patternfly Logo" />)
-    const nav = (
-      <Nav variant="horizontal">
-        <NavList>
-          <NavItem isActive>{manifest}</NavItem>
-        </NavList>
-      </Nav>
-    );
-    return <PageHeader  showNavToggle logo={logo} topNav={nav} />;
+  const HeaderBar = ({ Company, setisNavO, isNavO}: NavigationBarProps) => {
+    const logo = (<Brand src={process.env.PUBLIC_URL + '/inpetlogo.png'} alt="Logo" />)
+    return (<PageHeader  isNavOpen={isNavO} showNavToggle logo={logo} onNavToggle={setisNavO}><h1 className='font-face-gm'>Inpet Private Limited</h1></PageHeader>);
   };
   
 const Layout = () => {
-    const Header = <NavigationBar manifest={'Inpet'} />;
+
+    
+    const [isNavO, setisNavO] = useState(true);
+    const [activeItem, setActiveItem] = useState(0);
+
+
+    function onNavToggle(){
+        setisNavO(!isNavO);
+    }
+    function onSelect(result) {
+        setActiveItem(result.itemId)
+    }
+    const Header = <HeaderBar setisNavO={onNavToggle} isNavO={isNavO} Company={'Inpet'} />;
+    const nav = (<Nav onSelect={onSelect}>
+        <NavList>
+          <NavItem itemId={0} isActive={activeItem === 0}>Home</NavItem>
+          <NavItem itemId={1} isActive={activeItem === 1}>Entry</NavItem>
+          <NavItem itemId={2} isActive={activeItem === 2}>Search</NavItem>
+        </NavList>
+      </Nav>)
+      const sidebar = (<PageSidebar  nav={nav} isNavOpen={isNavO} />)
     return (
-        <Page header={Header}>
-      <PageSection>
-      <Brand src='https://www.patternfly.org/v4/images/pfLogo.ffdafb0c74aa4c9c011251aa8f0c144c.svg' alt="Patternfly Logo" />
+        <Page className='mynav' sidebar={sidebar} header={Header}>
+      <PageSection isFilled hasOverflowScroll>
+      
+      <Brand src={process.env.PUBLIC_URL + '/inpetlogo.png'} alt="Patternfly Logo" />
       </PageSection>
     </Page>
     )
