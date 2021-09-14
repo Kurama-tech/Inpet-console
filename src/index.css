@@ -11,3 +11,10 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@font-face {
+  font-family: "Inpet";
+  src: local("Inpet"),
+   url("./fonts/ethnocentricrg.ttf") format("truetype");
+  font-weight: bold;
+  }
