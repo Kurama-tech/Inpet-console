@@ -10,10 +10,7 @@ function App() {
     <div className="App">
       <Router>
       <Layout />
-      </Router>
-      
-      
-        
+      </Router>   
     </div>
   );
 }
