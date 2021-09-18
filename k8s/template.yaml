@@ -100,7 +100,7 @@ parameters:
 - description: The name of the MongoDB imagestream to be used
   displayName: Name of MongoDB Image
   name: IMAGE
-  value: quay.io/kurama/inpet-console
+  value: quay.io/kurama/inpet-console-ui
 - description: Version of MongoDB image to be used (3.4.x or latest).
   displayName: Version of MongoDB Image
   name: IMAGE_TAG
