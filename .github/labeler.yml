@@ -1,0 +1,31 @@
+repo:
+- '*'
+
+# Add 'test' label to any change to *.spec.js files within the source dir
+test:
+- test/**/*.test.js
+- test/**/*.spec.js
+- src/**/*.test.js
+- src/**/*.spec.js
+- test/**/*.test.tsx
+- test/**/*.spec.tsx
+- src/**/*.test.tsx
+- src/**/*.spec.tsx
+
+documentation:
+- README.md
+
+source:
+- any: ['app.js']
+
+NodejsConfig:
+- any: ['package.json', 'package-lock.json']
+
+ServerConfig:
+- any: ['ngnix/*']
+
+UI:
+- any: ['src/*']
+
+assets:
+- any: ['public/*']

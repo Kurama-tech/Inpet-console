@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: Template
+labels:
+        template: inpet-console
+metadata:
+  name: inpet-console
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: ${CON_SERVICE_NAME}
+    labels:
+      app: inpet-console
+  spec:
+    ports:
+     - protocol: TCP
+       name: http
+       port: 8080
+       targetPort: 8080
+    selector:
+      app: inpet-console
+    type: LoadBalancer
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: ${CON_SERVICE_NAME}
+  spec:
+    port:
+      targetPort: http
+    to:
+      kind: Service
+      name: ${CON_SERVICE_NAME}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+        app: inpet-console
+    name: ${CON_SERVICE_NAME}
+  spec:
+    selector:
+      matchLabels:
+        app: inpet-console
+    template:
+      metadata:
+        labels:
+          app: inpet-console
+      spec:
+        containers:
+        - env:
+          - name: API_SERVER_URL
+            value: http://${API_SERVICE_NAME}:32000
+          resources:
+            limits:
+              memory: ${MEMORY_LIMIT}
+              cpu: ${CPU_LIMIT}
+          image: ${IMAGE}:${IMAGE_TAG}
+          imagePullPolicy: Always
+          name: ${CON_SERVICE_NAME}
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+            tcpSocket:
+              port: 8080
+          readinessProbe:
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            failureThreshold: 3
+            successThreshold: 1
+            tcpSocket:
+              port: 8080
+            timeoutSeconds: 10
+        restartPolicy: Always
+parameters:
+- description: Maximum amount of memory the container can use.
+  displayName: Memory Limit
+  name: MEMORY_LIMIT
+  required: true
+  value: 512Mi
+- description: Maximum amount of cpu the container can use.
+  displayName: CPU Limit
+  name: CPU_LIMIT
+  required: true
+  value: 350m
+- description: The name of the OpenShift Service exposed for the api.
+  displayName: API Service Name
+  name: API_SERVICE_NAME
+  required: true
+  value: inpet-api-server
+- description: The name of the OpenShift Service exposed for the api.
+  displayName: API Service Name
+  name: CON_SERVICE_NAME
+  required: true
+  value: inpet-console-ui
+- description: The name of the MongoDB imagestream to be used
+  displayName: Name of MongoDB Image
+  name: IMAGE
+  value: quay.io/kurama/inpet-console
+- description: Version of MongoDB image to be used (3.4.x or latest).
+  displayName: Version of MongoDB Image
+  name: IMAGE_TAG
+  required: true
+  value: "latest"

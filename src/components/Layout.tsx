@@ -51,7 +51,7 @@ const Layout = () => {
     return (
         <Page className='mynav' sidebar={sidebar} header={Header}>
       <PageSection isFilled hasOverflowScroll>
-      
+      <h1 className="font-face-gm">INPET PRIVATE LIMITED</h1>
       <Brand src={process.env.PUBLIC_URL + '/inpetlogo.png'} alt="Patternfly Logo" />
       </PageSection>
     </Page>
