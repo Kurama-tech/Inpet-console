@@ -62,15 +62,11 @@ const Layout = () => {
         <Page className='mynav' sidebar={sidebar} header={Header}>
       <PageSection isFilled hasOverflowScroll>
       <h1 className="font-face-gm">INPET PRIVATE LIMITED</h1>
-        <Router>
-        <switch>
-        <Route exact path='/input' component={InputInventory} />
-        <Route exact path='/report' component={ReportInventory} />
-        <Route exact path='/output' component={OutputInventory} />
-        </switch>
-
-        </Router>
-      
+        <Switch>
+        <Route exact path='/input'><InputInventory /></Route>
+        <Route exact path='/report'><ReportInventory /></Route>
+        <Route exact path='/output'><OutputInventory /> </Route>
+        </Switch> 
       <Brand src={process.env.PUBLIC_URL + '/inpetlogo.png'} alt="Patternfly Logo" />
       </PageSection>
     </Page>
