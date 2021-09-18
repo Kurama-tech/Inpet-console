@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { useContext, useEffect, useState } from "react";
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+
 import {
     Page,
     PageHeader,
@@ -10,9 +12,14 @@ import {
     Nav,
     NavItem,
     NavList,
-    Brand
+    Brand,
+    InputGroup
   } from '@patternfly/react-core';
   import './Layout.css';
+  import './input.tsx'
+import InputInventory from "./input";
+import OutputInventory from "./output";
+import ReportInventory from "./report";
 
   type NavigationBarProps = {
     Company: string;
@@ -42,16 +49,28 @@ const Layout = () => {
     const Header = <HeaderBar setisNavO={onNavToggle} isNavO={isNavO} Company={'Inpet'} />;
     const nav = (<Nav onSelect={onSelect}>
         <NavList>
-          <NavItem itemId={0} isActive={activeItem === 0}>Home</NavItem>
-          <NavItem itemId={1} isActive={activeItem === 1}>Entry</NavItem>
-          <NavItem itemId={2} isActive={activeItem === 2}>Search</NavItem>
+          <NavItem itemId={0} isActive={activeItem === 0} ><Link to ="/input">Home</Link></NavItem>
+          <NavItem itemId={1} isActive={activeItem === 1}><Link to ="/report" >Entry</Link></NavItem>
+          <NavItem itemId={2} isActive={activeItem === 2}><Link to ="/output" >Search</Link></NavItem>
         </NavList>
+        
+        
       </Nav>)
+      
       const sidebar = (<PageSidebar  nav={nav} isNavOpen={isNavO} />)
     return (
         <Page className='mynav' sidebar={sidebar} header={Header}>
       <PageSection isFilled hasOverflowScroll>
       <h1 className="font-face-gm">INPET PRIVATE LIMITED</h1>
+        <Router>
+        <switch>
+        <Route exact path='/input' component={InputInventory} />
+        <Route exact path='/report' component={ReportInventory} />
+        <Route exact path='/output' component={OutputInventory} />
+        </switch>
+
+        </Router>
+      
       <Brand src={process.env.PUBLIC_URL + '/inpetlogo.png'} alt="Patternfly Logo" />
       </PageSection>
     </Page>
