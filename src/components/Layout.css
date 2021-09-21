@@ -1,4 +1,5 @@
 .pf-c-page.mynav {
+    height: 100%;
     --pf-c-page__header--BackgroundColor: #607d8b;
     --pf-c-page__sidebar--BackgroundColor: #78909c;
 }

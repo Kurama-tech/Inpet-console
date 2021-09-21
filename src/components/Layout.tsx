@@ -20,6 +20,9 @@ import {
 import InputInventory from "./input";
 import OutputInventory from "./output";
 import ReportInventory from "./report";
+import Supplier from "./Supplier";
+import Customer from "./Customer";
+import Dashboard from "./Dashboard";
 
   type NavigationBarProps = {
     Company: string;
@@ -49,9 +52,12 @@ const Layout = () => {
     const Header = <HeaderBar setisNavO={onNavToggle} isNavO={isNavO} Company={'Inpet'} />;
     const nav = (<Nav onSelect={onSelect}>
         <NavList>
-          <NavItem itemId={0} isActive={activeItem === 0} ><Link to ="/input">Home</Link></NavItem>
-          <NavItem itemId={1} isActive={activeItem === 1}><Link to ="/report" >Entry</Link></NavItem>
-          <NavItem itemId={2} isActive={activeItem === 2}><Link to ="/output" >Search</Link></NavItem>
+        <NavItem itemId={0} isActive={activeItem === 0} ><Link to ="/">Dashboard</Link></NavItem>
+        <NavItem itemId={1} isActive={activeItem === 1} ><Link to ="/supplier">Supplier Master</Link></NavItem>
+        <NavItem itemId={2} isActive={activeItem === 2} ><Link to ="/customer">Customer Master</Link></NavItem>
+          <NavItem itemId={3} isActive={activeItem === 3} ><Link to ="/inventory">Inventory</Link></NavItem>
+          <NavItem itemId={4} isActive={activeItem === 4}><Link to ="/report" >Report</Link></NavItem>
+          <NavItem itemId={5} isActive={activeItem === 5}><Link to ="/output" >Search</Link></NavItem>
         </NavList>
         
         
@@ -62,12 +68,15 @@ const Layout = () => {
         <Page className='mynav' sidebar={sidebar} header={Header}>
       <PageSection isFilled hasOverflowScroll>
       <h1 className="font-face-gm">INPET PRIVATE LIMITED</h1>
+      <br />
         <Switch>
-        <Route exact path='/input'><InputInventory /></Route>
+        <Route exact path='/'><Dashboard /></Route>
+        <Route exact path='/supplier'><Supplier /></Route>
+        <Route exact path='/customer'><Customer /></Route>
+        <Route exact path='/inventory'><InputInventory /></Route>
         <Route exact path='/report'><ReportInventory /></Route>
         <Route exact path='/output'><OutputInventory /> </Route>
         </Switch> 
-      <Brand src={process.env.PUBLIC_URL + '/inpetlogo.png'} alt="Patternfly Logo" />
       </PageSection>
     </Page>
     )

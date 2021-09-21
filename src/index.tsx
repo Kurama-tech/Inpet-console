@@ -6,9 +6,9 @@ import reportWebVitals from './reportWebVitals';
 import './fonts/ethnocentricrg.ttf';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  /* <React.StrictMode> */
+    <App />,
+ /*  </React.StrictMode>, */
   document.getElementById('root')
 );
 
