@@ -66,7 +66,7 @@ const Layout = () => {
       const sidebar = (<PageSidebar  nav={nav} isNavOpen={isNavO} />)
     return (
         <Page className='mynav' sidebar={sidebar} header={Header}>
-      <PageSection isFilled hasOverflowScroll>
+      <PageSection isFilled hasOverflowScroll hasShadowTop type="default" variant="light" >
       <h1 className="font-face-gm">INPET PRIVATE LIMITED</h1>
       <br />
         <Switch>
