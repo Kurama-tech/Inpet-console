@@ -5,7 +5,7 @@ type ApiResponse = {
     data: any;
 };
 
-const API_URL = (process.env.REACT_APP_API_SERVER_URL || 'http://inpet-api-server:32000/api')
+const API_URL = (process.env.REACT_APP_API_SERVER_URL || 'http://inpet-api-server-msawood-stage.apps.sandbox-m2.ll9k.p1.openshiftapps.com/api')
 
 async function getSuppliers(){
     const result: ApiResponse = { code: 0, data: {} };
