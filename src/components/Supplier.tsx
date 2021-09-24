@@ -37,7 +37,7 @@ const Supplier = () => {
     return (
         
     <div>
-        <Tabs isFilled isBox activeKey={activeTabKey} onSelect={handleTabClick} >
+        {/* <Tabs isFilled isBox activeKey={activeTabKey} onSelect={handleTabClick} >
           <Tab tabContentId="refTab1Section" eventKey={0} title={<><TabTitleIcon><UsersIcon /></TabTitleIcon><TabTitleText>Suppliers Table</TabTitleText></>}>
               <TabContent eventKey={0} id={'refTab1Section'}>
                   <ComposableTableBasic type={'Suppliers'} tableData={suppliersData}/>
@@ -49,8 +49,8 @@ const Supplier = () => {
                  Add
               </TabContent>
           </Tab>
-        </Tabs>
-        
+        </Tabs> */}
+        <ComposableTableBasic type={'Suppliers'} tableData={suppliersData}/>
      </div> 
     )
 }

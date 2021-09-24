@@ -21,4 +21,18 @@ async function getSuppliers(){
     return result;
 }
 
-export {getSuppliers}
+async function postSuppliers(data :any){
+    const result: ApiResponse = { code: 0, data: {} };
+    const uri = API_URL + '/add/supplier';
+    await axios.post(uri, data).then((res: AxiosResponse) => {
+        result.code = res.status;
+        result.data = res.data;
+    }).catch((err) => {
+        console.log(err);
+        result.code = err.response.status;
+        result.data = err.response.data;
+    });
+    return result;
+}
+
+export {getSuppliers, postSuppliers}
