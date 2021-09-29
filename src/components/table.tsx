@@ -29,6 +29,7 @@ function constructTableData(data){
 const ComposableTableBasic = ({type, tableData}: TableProps) => {
   const columns = getcolumns(type)
   const rows = constructTableData(tableData);
+  const [isModalOpen, setisModalOpen] = useState(false);
   const [OpenIndex, setOpenIndex] = useState(0);
   const [filterOpen, setfilterOpen] = useState(false);
   const [selectedFilter, setFilter] = useState("");
@@ -96,7 +97,10 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
         </ToolbarItem>
         <ToolbarItem variant="separator" />
         <ToolbarItem>
-          <AddModal type={type} />
+        <Button variant="primary" onClick={() => setisModalOpen(true)}>
+                Add {type}
+        </Button>
+          <AddModal type={type} isModalOpen={isModalOpen} setisModalOpen={setisModalOpen}/>
         </ToolbarItem>
         </ToolbarContent>
       </Toolbar>

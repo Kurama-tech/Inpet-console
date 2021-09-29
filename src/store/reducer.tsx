@@ -1,8 +1,10 @@
+import { AlertActionCloseButton } from "@patternfly/react-core";
 
 
 export interface StateContext {
     APIData: [];
     error: string;
+    alerts: [];
 }
 
 
@@ -18,6 +20,16 @@ const Reducer = (state, action) => {
             return {
                 ...state,
                 error: action.data
+            };
+        case 'ADD_Alert':
+            return {
+                ...state,
+                alerts: state.alerts.concat(action.data)
+            }
+        case 'REMOVE_Alert':
+            return {
+                ...state,
+                alerts: state.alerts.filter(el => el.key !== action.data)
             };
         default:
             return state;

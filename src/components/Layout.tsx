@@ -13,7 +13,12 @@ import {
     NavItem,
     NavList,
     Brand,
-    InputGroup
+    InputGroup,
+    Alert,
+    Text,
+    AlertActionCloseButton,
+    AlertGroup,
+    AlertVariant
   } from '@patternfly/react-core';
   import './Layout.css';
   import './input.tsx'
@@ -23,6 +28,7 @@ import ReportInventory from "./report";
 import Supplier from "./Supplier";
 import Customer from "./Customer";
 import Dashboard from "./Dashboard";
+import { Context } from "src/store/store";
 
   type NavigationBarProps = {
     Company: string;
@@ -38,9 +44,10 @@ import Dashboard from "./Dashboard";
   
 const Layout = () => {
 
-    
+  const {state, dispatch} = useContext(Context)
     const [isNavO, setisNavO] = useState(true);
     const [activeItem, setActiveItem] = useState(0);
+    
 
 
     function onNavToggle(){
@@ -69,6 +76,24 @@ const Layout = () => {
       <PageSection isFilled hasOverflowScroll hasShadowTop type="default" variant="light" >
       <h1 className="font-face-gm">INPET PRIVATE LIMITED</h1>
       <br />
+      <AlertGroup isToast isLiveRegion>
+          {state.alerts.map(({key, variant, title, details}) => (
+            <Alert
+            //isExpandable
+              variant={AlertVariant[variant]}
+              title={title}
+              actionClose={
+                <AlertActionCloseButton
+                  title={title}
+                  variantLabel={`${variant} alert`}
+                  onClose={() => dispatch({ type: "REMOVE_Alert", data: key })}
+                />
+              }
+              key={key} >
+                {/* <Text>{details}</Text> */}
+              </Alert>
+          ))}
+        </AlertGroup>
         <Switch>
         <Route exact path='/'><Dashboard /></Route>
         <Route exact path='/supplier'><Supplier /></Route>

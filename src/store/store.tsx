@@ -4,12 +4,13 @@ import Reducer, {StateContext} from './reducer'
 
 interface IContextProps {
     state: StateContext;
-    dispatch: ({type}:{type:string}) => void;
+    dispatch: ({type}:{type:string, data: any}) => void;
   }
 
 const initialState = {
     APIData: [],
-    error: 'error'
+    error: 'error',
+    alerts: [],
 };
 
 export const Context = React.createContext({} as IContextProps);;

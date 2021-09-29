@@ -21,9 +21,11 @@ async function getSuppliers(){
     return result;
 }
 
-async function postSuppliers(data :any){
+async function postCallCustSuppliers(data :any, mode=0){
     const result: ApiResponse = { code: 0, data: {} };
-    const uri = API_URL + '/add/supplier';
+    let subPath = '/add/supplier';
+    if (mode === 1) subPath = '/add/customers';
+    const uri = API_URL + subPath;
     await axios.post(uri, data).then((res: AxiosResponse) => {
         result.code = res.status;
         result.data = res.data;
@@ -35,4 +37,12 @@ async function postSuppliers(data :any){
     return result;
 }
 
-export {getSuppliers, postSuppliers}
+async function putCallCustSupply(data:any, mode=0){
+    const result: ApiResponse = { code: 0, data: {} };
+    let subPath = '/add/supplier';
+    if (mode === 1) subPath = '/add/customers';
+    const uri = API_URL + subPath;
+}
+
+
+export {getSuppliers, postCallCustSuppliers}
