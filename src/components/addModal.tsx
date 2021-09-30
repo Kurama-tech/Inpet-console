@@ -21,10 +21,6 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
     for (let i = 0; i <= 15; i++) {
         validations[i] = "default"
     }
-    console.log(isEdit);
-    console.log(data);
-    console.log(editID);
-    console.log(sid);
     function ClearALL(){
         setname('');
         setSID('');

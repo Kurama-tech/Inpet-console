@@ -12,7 +12,6 @@ type DeleteModalType = {
 }
 
 const DeleteModal = ({Sid='', type, id='', isModalOpen, setisModalOpen}: DeleteModalType) => {
-    console.log(id);
     const {state, dispatch} = useContext(Context);
     const [progress, setProgress] = useState(false);
     function deleteSupplierCustomer(){

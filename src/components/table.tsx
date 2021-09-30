@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { TableComposable, Thead, Tbody, Tr, Th, Td, Caption, } from '@patternfly/react-table';
 import { Button, DescriptionList, Text, DescriptionListDescription, DescriptionListGroup, DescriptionListTerm, Drawer, DrawerActions, DrawerCloseButton, DrawerContent, DrawerContentBody, DrawerHead, DrawerPanelBody, DrawerPanelContent, getUniqueId, Menu, MenuContent, MenuItem, MenuList, MenuToggle, SearchInput, Select, SelectOption, SelectVariant, Title, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
@@ -35,6 +35,11 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
   //const rows = constructTableData(tableData);
   var drawerRef = React.createRef<HTMLSpanElement>();
   const {state, dispatch} = useContext(Context);
+  const [TableData, SetTableData] = useState<any>([]);
+
+  useEffect(()=>{
+    SetTableData(tableData);
+  },[tableData])
   const [DetailsID, setDetailsID] = useState('');
   const [Banking, setBanking] = useState({});
   const [Address, setAddress] = useState({});
@@ -54,9 +59,9 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
   const [selectedFilter, setFilter] = useState("");
   const [searchValue, setSearch] = useState("");
   const filterOptions = [
-    { value: 'By Name', disabled: false, isPlaceholder: true },
+    { value: 'Name', disabled: false, isPlaceholder: true },
     { value: 'id', disabled: false },
-    { value: 'Phone no', disabled: false },
+    //{ value: 'Phone', disabled: false },
   ];
   function openDeleteModal(id:string, sid:string){
     setdeleteid(id);
@@ -89,8 +94,30 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
     setFilter(selection)
     setfilterOpen(false);
   }
+  function getFilter(value){
+    if(value === 'id'){
+      return 'SID'
+    }
+    //else if(value === 'Phone'){
+    //  return 'SPhone'
+    //}
+    return 'SName'
+    
+  }
   function handleSearch(value, event){
     setSearch(value);
+    var tableD :any = []
+    if(value === ''){
+      tableD = tableData;
+    }
+    else{
+      var filter = getFilter(selectedFilter);
+      tableD = TableData.filter(function(o){return o[filter].includes(value)} )
+      console.log(tableD);
+      
+    }
+    SetTableData(tableD);
+    
   }
   const customStyle = {
     borderLeft: '3px solid var(--pf-global--primary-color--100)'
@@ -169,13 +196,6 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
     </DescriptionList> </DrawerPanelBody>
     </DrawerPanelContent>
   );
-
-  function isObjectEmpty(value) {
-    return (
-      Object.prototype.toString.call(value) === '[object Object]' &&
-      JSON.stringify(value) === '{}'
-    );
-  }
   
   return (
     <React.Fragment>
@@ -231,7 +251,7 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
           </Tr>
         </Thead>
         <Tbody>
-          {tableData.length > 0 && tableData.map((element, rowIndex) => (
+          {TableData.length > 0 && TableData.map((element, rowIndex) => (
             <Tr isHoverable key={rowIndex} style={OpenIndex === rowIndex ? customStyle : {}} onRowClick={(event)=>{handleRowClick(rowIndex, element)}}>
             <Td key={`${rowIndex}_0`}>{element.SID}</Td>
             <Td key={`${rowIndex}_1`}>{element.SName}</Td>
