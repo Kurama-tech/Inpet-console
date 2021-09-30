@@ -1,25 +1,52 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Modal, ModalVariant, Button, Form, FormGroup, Grid, GridItem, TextInput, FormFieldGroupExpandable, FormFieldGroupHeader, Alert, FormAlert, getUniqueId, Spinner } from '@patternfly/react-core';
-import { postCallCustSuppliers } from '../services/APIservice';
+import { postCallCustSuppliers, putCallCustSupply } from '../services/APIservice';
 import { Context } from 'src/store/store';
 type ModalType = {
+    addORedit: string;
     type: string;
     isEdit?: boolean;
     data? : any;
+    editID?:string;
+    sid?:string
     isModalOpen: boolean;
     setisModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 
 }
 
-const AddModal = ({ type, isEdit=false, data={}, isModalOpen, setisModalOpen }: ModalType) => {
+const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', isModalOpen, setisModalOpen }: ModalType) => {
     type validateType = "error" | "default" | "success" | "warning" | undefined
     const {state, dispatch} = useContext(Context);
     let validations: validateType[] = [];
     for (let i = 0; i <= 15; i++) {
         validations[i] = "default"
     }
+    console.log(isEdit);
+    console.log(data);
+    console.log(editID);
+    console.log(sid);
+    function ClearALL(){
+        setname('');
+        setSID('');
+        setEmail('');
+        setSPhone('');
+        setNature('');
+        setSGSTIN('');
+        setBankName('');
+        setAccountTyp('');
+        setAccountName('');
+        setIFSC('');
+        setCity('');
+        setState('');
+        setPincode('');
+        setCountry('');
+        setCname('');
+        setCEmail('');
+        setCNo('');
+        setValidated(validations);
+    }
     const [progress, setProgress] = useState(false);
-    //const [isModalOpen, setisModalOpen] = useState(false);
+    
     const [name, setname] = useState('');
     const [SID, setSID] = useState('');
     const [SEmail, setEmail] = useState('');
@@ -39,6 +66,33 @@ const AddModal = ({ type, isEdit=false, data={}, isModalOpen, setisModalOpen }: 
     const [CEmail, setCEmail] = useState('');
     const [CNo, setCNo] = useState('');
     const [CNoV, setCNoV] = useState<validateType>("default")
+
+    useEffect(()=>{
+        if(isEdit){
+        setname(data.SName ? data.SName : '');
+        setSID(data.SID ? data.SID : '');
+        setEmail(data.SEmail ? data.SEmail : '');
+        setSPhone(data.SPhone ? data.SPhone : '');
+        setNature(data.Nature ? data.Nature : '');
+        setSGSTIN(data.SGSTIN ? data.SGSTIN : '');
+        setBankName(data.BankingDetails['BankName'] ? data.BankingDetails['BankName'] : '');
+        setAccountTyp(data.BankingDetails['AccountType'] ? data.BankingDetails['AccountType'] : '');
+        setAccountName(data.BankingDetails['AccountName'] ? data.BankingDetails['AccountName'] : '');
+        setIFSC(data.BankingDetails['IFSC'] ? data.BankingDetails['IFSC'] : '');
+        setCity(data.SAddress['City']? data.SAddress['City'] : '');
+        setState(data.SAddress['State']? data.SAddress['State'] : '');
+        setPincode(data.SAddress['PinCode']? data.SAddress['PinCode'] : '');
+        setCountry(data.SAddress['Country']? data.SAddress['Country'] : '');
+        setCname(data.Contact['Name']? data.Contact['Name'] : '');
+        setCEmail(data.Contact['Email']? data.Contact['Email'] : '');
+        setCNo(data.Contact['No']? data.Contact['No'] : '')
+        }
+        else{
+            ClearALL();
+        }
+
+    },[data, isEdit])
+
 
     const [validated, setValidated] = useState<validateType[]>(validations)
 
@@ -78,10 +132,11 @@ const AddModal = ({ type, isEdit=false, data={}, isModalOpen, setisModalOpen }: 
             setValidInvalid("error", i);
         }
     }
-    function onAdd(type) {
-        console.log("here")
-        
-            console.log("here2")
+    function onAdd(type, isEdit?:boolean, editID?:string, sid?:string) {
+        var mode = 0
+        if(type === 'Customers'){
+            mode = 1
+        } 
             var DatatoSend = {
                 SName: name,
                 SID: SID,
@@ -107,7 +162,36 @@ const AddModal = ({ type, isEdit=false, data={}, isModalOpen, setisModalOpen }: 
                 },
                 Nature: Nature
             }
-            postCallCustSuppliers(DatatoSend).then((res) => {
+            if(isEdit && editID!== '' && sid !== ''){
+                putCallCustSupply(editID, sid, DatatoSend, mode).then((res) => {
+                    setProgress(true);
+                    if (res.code === 200) {
+                        //alert("Added!")
+                        const successAlert = {
+                            title: "["+ res.code + "] Edit " + type + " Success!",
+                            details: res.data.toString(),
+                            key: getUniqueId(),
+                            variant: "success"
+                        }
+                        dispatch({type: "ADD_Alert", data: successAlert});
+                        setProgress(false);
+
+                        setisModalOpen(false)
+                    } else {
+                        setProgress(false);
+                        setisModalOpen(false);
+                        const errorAlert = {
+                            title: "["+ res.code + "] Edit " + type + " Error!",
+                            details: res.data.toString(),
+                            key: getUniqueId(),
+                            variant: "danger"
+                        }
+                        dispatch({type: "ADD_Alert", data: errorAlert});
+                    }
+                });
+            }
+            else{
+            postCallCustSuppliers(DatatoSend, mode).then((res) => {
                 setProgress(true);
                 if (res.code === 200) {
                     //alert("Added!")
@@ -132,6 +216,7 @@ const AddModal = ({ type, isEdit=false, data={}, isModalOpen, setisModalOpen }: 
                     dispatch({type: "ADD_Alert", data: errorAlert});
                 }
             });
+        }
 
     }
     return (
@@ -141,12 +226,12 @@ const AddModal = ({ type, isEdit=false, data={}, isModalOpen, setisModalOpen }: 
             </Button> */}
             <Modal
                 variant={ModalVariant.medium}
-                title={'Add ' + type + ' Dailog'}
+                title={addORedit + ' ' + type + ' Dailog'}
                 isOpen={isModalOpen}
-                onClose={() => setisModalOpen(false)}
+                onClose={() => {ClearALL(); setisModalOpen(false)}}
                 actions={[
-                    <Button key="confirm" variant="primary" onClick={() => onAdd(type)}>
-                        Add
+                    <Button key="confirm" variant="primary" onClick={() => onAdd(type, isEdit, editID, sid)}>
+                        {addORedit}
                     </Button>,
                     <Button key="cancel" variant="link" onClick={() => setisModalOpen(false)}>
                         Cancel
@@ -180,7 +265,7 @@ const AddModal = ({ type, isEdit=false, data={}, isModalOpen, setisModalOpen }: 
                     )}
                     <Grid hasGutter md={6}>
                         <GridItem span={12}>
-                            <FormGroup label="Supplier Id" isRequired fieldId="grid-form-name-01" helperText="Please Enter the Supplier ID">
+                            <FormGroup label={ type + " Id"} isRequired fieldId="grid-form-name-01" helperText="Please Enter the Supplier ID">
                                 <TextInput
                                     isRequired
                                     type="text"

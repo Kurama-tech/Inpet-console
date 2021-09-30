@@ -3,6 +3,8 @@ import { AlertActionCloseButton } from "@patternfly/react-core";
 
 export interface StateContext {
     APIData: [];
+    Suppliers: [];
+    Customers: [];
     error: string;
     alerts: [];
 }
@@ -15,6 +17,16 @@ const Reducer = (state, action) => {
             return {
                 ...state,
                 APIData: action.data
+            };
+        case 'APISuppliers':
+            return {
+                ...state,
+                Suppliers: action.data
+            };
+        case 'APICustomers':
+            return {
+                ...state,
+                Customers: action.data
             };
         case 'SET_ERROR':
             return {

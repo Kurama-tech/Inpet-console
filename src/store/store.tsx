@@ -11,6 +11,8 @@ const initialState = {
     APIData: [],
     error: 'error',
     alerts: [],
+    Suppliers: [],
+    Customers: []
 };
 
 export const Context = React.createContext({} as IContextProps);;
