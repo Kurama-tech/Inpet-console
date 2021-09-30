@@ -169,6 +169,13 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
     </DescriptionList> </DrawerPanelBody>
     </DrawerPanelContent>
   );
+
+  function isObjectEmpty(value) {
+    return (
+      Object.prototype.toString.call(value) === '[object Object]' &&
+      JSON.stringify(value) === '{}'
+    );
+  }
   
   return (
     <React.Fragment>
@@ -224,7 +231,7 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
           </Tr>
         </Thead>
         <Tbody>
-          {tableData.map((element, rowIndex) => (
+          {tableData.length !== 0 && tableData.map((element, rowIndex) => (
             <Tr isHoverable key={rowIndex} style={OpenIndex === rowIndex ? customStyle : {}} onRowClick={(event)=>{handleRowClick(rowIndex, element)}}>
             <Td key={`${rowIndex}_0`}>{element.SID}</Td>
             <Td key={`${rowIndex}_1`}>{element.SName}</Td>
