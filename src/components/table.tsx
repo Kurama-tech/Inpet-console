@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 
 import { TableComposable, Thead, Tbody, Tr, Th, Td, Caption, } from '@patternfly/react-table';
-import { Button, DescriptionList, DescriptionListDescription, DescriptionListGroup, DescriptionListTerm, Drawer, DrawerActions, DrawerCloseButton, DrawerContent, DrawerContentBody, DrawerHead, DrawerPanelBody, DrawerPanelContent, getUniqueId, Menu, MenuContent, MenuItem, MenuList, MenuToggle, SearchInput, Select, SelectOption, SelectVariant, Title, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
+import { Button, DescriptionList, Text, DescriptionListDescription, DescriptionListGroup, DescriptionListTerm, Drawer, DrawerActions, DrawerCloseButton, DrawerContent, DrawerContentBody, DrawerHead, DrawerPanelBody, DrawerPanelContent, getUniqueId, Menu, MenuContent, MenuItem, MenuList, MenuToggle, SearchInput, Select, SelectOption, SelectVariant, Title, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { ToggleGroup, ToggleGroupItem, ButtonVariant, DropdownToggle } from '@patternfly/react-core';
 import AddModal from './addModal';
 import DeleteModal from './deleteModal';
@@ -160,11 +160,11 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
       Contact Details
     </Title>
       <DescriptionListTerm>Contact Name</DescriptionListTerm>
-      <DescriptionListDescription>{contact['Name']}</DescriptionListDescription>
+      <DescriptionListDescription><Text>{contact['Name']}</Text></DescriptionListDescription>
       <DescriptionListTerm>Contact Email</DescriptionListTerm>
-      <DescriptionListDescription>{contact['Email']}</DescriptionListDescription>
+      <DescriptionListDescription><a href={"mailto:"+contact['Email']}>{contact['Email']}</a></DescriptionListDescription>
       <DescriptionListTerm>Contact Phone</DescriptionListTerm>
-      <DescriptionListDescription>{contact['No']}</DescriptionListDescription>
+      <DescriptionListDescription><a href={"tel:"+contact['No']}>{contact['No']}</a></DescriptionListDescription>
     </DescriptionListGroup>
     </DescriptionList> </DrawerPanelBody>
     </DrawerPanelContent>
@@ -235,8 +235,8 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
             <Tr isHoverable key={rowIndex} style={OpenIndex === rowIndex ? customStyle : {}} onRowClick={(event)=>{handleRowClick(rowIndex, element)}}>
             <Td key={`${rowIndex}_0`}>{element.SID}</Td>
             <Td key={`${rowIndex}_1`}>{element.SName}</Td>
-            <Td key={`${rowIndex}_2`}>{element.SEmail}</Td>
-            <Td key={`${rowIndex}_3`}>{element.SPhone}</Td>
+            <Td key={`${rowIndex}_2`}><a href={'mailto:'+element.SEmail}>{element.SEmail}</a></Td>
+            <Td key={`${rowIndex}_3`}><a href={'tel:'+element.SPhone}>{element.SPhone}</a></Td>
             <Td key={`${rowIndex}_4`} >{element.SAddress['City']}</Td>
             <Td key={`${rowIndex}_5`}>{element.Contact.Name}</Td>
             <Td key={`${rowIndex}_6`}>{element.Nature}</Td>
