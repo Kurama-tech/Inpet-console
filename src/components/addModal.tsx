@@ -50,6 +50,7 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
     const [SPhoneV, setSPhoneV] = useState<validateType>("default")
     const [Nature, setNature] = useState('');
     const [SGSTIN, setSGSTIN] = useState('');
+    const [vSGSTIN, setvSGSTIN] = useState<validateType>("default")
     const [BankName, setBankName] = useState('');
     const [AccountType, setAccountTyp] = useState('');
     const [AccountName, setAccountName] = useState('');
@@ -128,8 +129,24 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
             setValidInvalid("error", i);
         }
     }
+    function GSTValidate(value) {
+        if(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}Z[0-9]{1}$/.test(value)){
+            setvSGSTIN("success")
+        } else {
+            setvSGSTIN("error")
+        }
+    }
     function onAdd(type, isEdit?:boolean, editID?:string, sid?:string) {
-        var mode = 0
+        var mode = 0;
+        if(name === '' ||  SID  === '' || SPhone  === '' || SGSTIN  === '' || City  === '' || State  === '' || Pincode  === '' || Country  === '' || Cname  === '' || CEmail  === '' || CNo  === '' || BankName  === '' || AccountName  === '' || AccountType  === '' || IFSC  === '' || Nature  === '' ){
+            for(let i=0;i<15;i++){
+                setValidInvalid("error", i)
+                setvSGSTIN("error")
+                setSPhoneV("error")
+                setCNoV("error")
+            }
+            return;
+        }
         if(type === 'Customers'){
             mode = 1
         } 
@@ -291,10 +308,10 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
                                     type="text"
                                     id="grid-form-name-03"
                                     name="grid-form-name-03"
-                                    validated={validated[1]}
+                                    validated={vSGSTIN}
                                     aria-describedby="grid-form-name-01-helper"
                                     value={SGSTIN}
-                                    onChange={(value) => { setSGSTIN(value); NormalValidate(value, 1) }}
+                                    onChange={(value) => { setSGSTIN(value); GSTValidate(value) }}
                                 />
                             </FormGroup>
                             <FormGroup label="Nature of Product/Services" isRequired fieldId="grid-form-name-04" helperText="Include your middle name if you have one.">

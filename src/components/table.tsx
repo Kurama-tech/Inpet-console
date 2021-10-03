@@ -8,6 +8,7 @@ import DeleteModal from './deleteModal';
 import {EllipsisVIcon} from '@patternfly/react-icons'
 import { deleteCustSuppliers} from '../services/APIservice';
 import { Context } from 'src/store/store';
+import ExportModal from './ExportModal';
 
 type TableProps = {
     type: string;
@@ -47,6 +48,7 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
   const [isExpanded, setisExpanded] = useState(false);
   const [isModalOpen, setisModalOpen] = useState(false);
   const [isDModalOpen, setisDModalOpen] = useState(false);
+  const [isEModalOpen, setisEModalOpen] = useState(false);
   const [addORedit, setaddORedit] = useState('Add');
   const [OpenIndex, setOpenIndex] = useState(0);
   const [isEdit, setisEdit] = useState(false);
@@ -58,6 +60,125 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
   const [filterOpen, setfilterOpen] = useState(false);
   const [selectedFilter, setFilter] = useState("");
   const [searchValue, setSearch] = useState("");
+  const [allRowsSelected, setAllRowsSelected] = React.useState(false);
+  const [selected, setSelected] = React.useState(TableData.map(row => false));
+  const [recentSelection, setRecentSelection] = React.useState(null);
+  const [shifting, setShifting] = React.useState(false);
+  const [exportData, setExportData] = useState<any>([]);
+
+  
+  
+  const onSelect = (event, isSelected, rowId) => {
+    let newSelected = selected.map((sel, index) => (index === rowId ? isSelected : sel))
+    
+    // if the user is shift + selecting the checkboxes, then all intermediate checkboxes should be selected
+    if (shifting && recentSelection !== null && isSelected) {
+      const numberSelected = rowId - recentSelection;
+      newSelected = newSelected.map((sel, index) => {
+        // select all between recentSelection and current rowId;
+        const intermediateIndexes = numberSelected > 0 ? 
+          Array.from(new Array(numberSelected + 1), (x, i) => i + (recentSelection)) : 
+          Array.from(new Array(Math.abs(numberSelected) + 1), (x, i) => i + rowId);
+        return intermediateIndexes.includes(index) ? true : sel;
+      })
+    }
+    setSelected(newSelected);
+    setRecentSelection(rowId);
+    console.log(newSelected);
+    //prepareElement(TableData[rowId]);
+    //for(let i=0;i<newSelected.length;i++){
+     // if(newSelected[i] === true) prepareElement(TableData[i])
+      //else RemoveItem(i)
+   // }
+    //console.log(exportData);
+    
+    if (!isSelected && allRowsSelected) {
+      setAllRowsSelected(false);
+    } else if (isSelected && !allRowsSelected) {
+      let allSelected = true;
+      for (let i = 0; i < selected.length; i++) {
+        if (i !== rowId) {
+          //RemoveItem(i)
+          if (!selected[i]) {
+            allSelected = false;
+            
+          }
+        }
+      }
+      if (allSelected) {
+        setAllRowsSelected(true);
+      }
+    }
+  };
+  
+  
+  const onSelectAll = (event, isSelected) => {
+    setAllRowsSelected(isSelected);
+    setSelected(TableData.map(sel => isSelected));
+  
+  };
+  
+  const ExportData = () => {
+    
+    var temp: any = [];
+    if(selected.length <= 0){
+      TableData.forEach(element => {
+        temp.push(prepareElement(element))
+      });
+    }
+    else{
+      for(let i=0;i<selected.length; i++){
+        if(selected[i] === true) temp.push(prepareElement(TableData[i]))
+      }
+    }
+    setExportData(temp);
+    console.log(temp);
+    setisEModalOpen(true);
+  }
+  const prepareElement = (element) => {
+    //var selectedLst: any = [];
+    var temp = {
+      "ID" : element.SID,
+      "Name": element.SName,
+      "Email": element.SEmail,
+      "Phone": element.SPhone,
+      "Address": element.SAddress['City'] + ', ' + element.SAddress['PinCode'] + ', ' + element.SAddress['State'] + ', ' + element.SAddress['Country'],
+      "Contact": element.Contact.Name,
+      "Nature": element.Nature
+    }
+    //selectedLst.push(temp);
+    //setExportData(selectedLst);
+    return temp;
+
+  }
+
+  useEffect(() => {
+    
+    document.addEventListener("keydown", (e)=>{
+      if (e.key === 'Shift') {
+        setShifting(true);
+      }
+    });
+    document.addEventListener("keyup", (e) => {
+      if (e.key === 'Shift') {
+        setShifting(false);
+      }
+    });
+    
+    return () => {
+      document.removeEventListener("keydown", (e)=>{
+        if (e.key === 'Shift') {
+          setShifting(true);
+        }
+      });
+      document.removeEventListener("keyup", (e) => {
+        if (e.key === 'Shift') {
+          setShifting(false);
+        }
+      });
+    }
+  }, []);
+
   const filterOptions = [
     { value: 'Name', disabled: false, isPlaceholder: true },
     { value: 'id', disabled: false },
@@ -165,7 +286,7 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
       <DescriptionListTerm>State</DescriptionListTerm>
       <DescriptionListDescription>{Address['State']}</DescriptionListDescription>
       <DescriptionListTerm>Pincode</DescriptionListTerm>
-      <DescriptionListDescription>{Address['Pincode']}</DescriptionListDescription>
+      <DescriptionListDescription>{Address['PinCode']}</DescriptionListDescription>
       <DescriptionListTerm>Country</DescriptionListTerm>
       <DescriptionListDescription>{Address['Country']}</DescriptionListDescription>
     </DescriptionListGroup>
@@ -223,7 +344,8 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
           </ToolbarItem>
           <ToolbarItem variant="separator" />
       <ToolbarItem>
-          <Button variant="secondary">Export</Button>
+          <Button onClick={ExportData} variant="secondary">Export</Button>
+          {/* <CsvDownload data={TableData}></CsvDownload> */}
         </ToolbarItem>
         <ToolbarItem variant="separator" />
         <ToolbarItem>
@@ -243,8 +365,16 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
         <Caption>Table which displays details of : {type}</Caption>
         <DeleteModal Sid={deletesid} type={type} id={deleteid} isModalOpen={isDModalOpen} setisModalOpen={setisDModalOpen} />
         <AddModal addORedit={addORedit} type={type} isModalOpen={isModalOpen} isEdit={isEdit} data={EditData} editID={Editid} sid={sid} setisModalOpen={setisModalOpen}/>
+        <ExportModal type={type} data={exportData} setisModalOpen={setisEModalOpen} isModalOpen={isEModalOpen} /> 
         <Thead>
+        
           <Tr>
+          <Th
+            select={{
+              onSelect: onSelectAll,
+              isSelected: allRowsSelected
+            }}
+          />
             {columns.map((column, columnIndex) => (
               <Th key={columnIndex}>{column}</Th>
             ))}
@@ -253,6 +383,14 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
         <Tbody>
           {TableData.length > 0 && TableData.map((element, rowIndex) => (
             <Tr isHoverable key={rowIndex} style={OpenIndex === rowIndex ? customStyle : {}} onRowClick={(event)=>{handleRowClick(rowIndex, element)}}>
+            <Td
+              key={`${rowIndex}_8`}
+              select={{
+                rowIndex,
+                onSelect,
+                isSelected: selected[rowIndex],
+              }}
+            />
             <Td key={`${rowIndex}_0`}>{element.SID}</Td>
             <Td key={`${rowIndex}_1`}>{element.SName}</Td>
             <Td key={`${rowIndex}_2`}><a href={'mailto:'+element.SEmail}>{element.SEmail}</a></Td>
