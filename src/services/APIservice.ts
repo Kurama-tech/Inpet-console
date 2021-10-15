@@ -5,7 +5,7 @@ type ApiResponse = {
     data: any;
 };
 
-const API_URL = (process.env.REACT_APP_API_SERVER_URL || 'http://inpet-api-server-msawood-stage.apps.sandbox-m2.ll9k.p1.openshiftapps.com/api')
+const API_URL = (process.env.REACT_APP_API_SERVER_URL || 'https://floating-springs-06790.herokuapp.com/api')
 
 async function getCustSuppliers(mode=0){
     const result: ApiResponse = { code: 0, data: {} };

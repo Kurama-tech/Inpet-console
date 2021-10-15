@@ -138,11 +138,11 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
   const prepareElement = (element) => {
     //var selectedLst: any = [];
     var temp = {
-      "ID" : element.SID,
+      "SID" : element.SID,
       "Name": element.SName,
       "Email": element.SEmail,
       "Phone": element.SPhone,
-      "Address": element.SAddress['City'] + ', ' + element.SAddress['PinCode'] + ', ' + element.SAddress['State'] + ', ' + element.SAddress['Country'],
+      "Address": element.SAddress['AddressLine'] + ', ' +element.SAddress['City'] + ', ' + element.SAddress['PinCode'] + ', ' + element.SAddress['State'] + ', ' + element.SAddress['Country'],
       "Contact": element.Contact.Name,
       "Nature": element.Nature
     }
@@ -281,6 +281,8 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
     <Title headingLevel="h4" size="xl">
       Address
     </Title>
+      <DescriptionListTerm>Address Line</DescriptionListTerm>
+      <DescriptionListDescription>{Address['AddressLine']}</DescriptionListDescription>
       <DescriptionListTerm>City</DescriptionListTerm>
       <DescriptionListDescription>{Address['City']}</DescriptionListDescription>
       <DescriptionListTerm>State</DescriptionListTerm>
@@ -298,6 +300,8 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
       <DescriptionListDescription>{Banking['BankName']}</DescriptionListDescription>
       <DescriptionListTerm>Account Name</DescriptionListTerm>
       <DescriptionListDescription>{Banking['AccountName']}</DescriptionListDescription>
+      <DescriptionListTerm>Account Number</DescriptionListTerm>
+      <DescriptionListDescription>{Banking['AccountNumber']}</DescriptionListDescription>
       <DescriptionListTerm>Account Type</DescriptionListTerm>
       <DescriptionListDescription>{Banking['AccountType']}</DescriptionListDescription>
       <DescriptionListTerm>IFSC Code</DescriptionListTerm>
@@ -395,7 +399,7 @@ const ComposableTableBasic = ({type, tableData}: TableProps) => {
             <Td key={`${rowIndex}_1`}>{element.SName}</Td>
             <Td key={`${rowIndex}_2`}><a href={'mailto:'+element.SEmail}>{element.SEmail}</a></Td>
             <Td key={`${rowIndex}_3`}><a href={'tel:'+element.SPhone}>{element.SPhone}</a></Td>
-            <Td key={`${rowIndex}_4`} >{element.SAddress['City']}</Td>
+            <Td key={`${rowIndex}_4`} >{element.SAddress['AddressLine']}</Td>
             <Td key={`${rowIndex}_5`}>{element.Contact.Name}</Td>
             <Td key={`${rowIndex}_6`}>{element.Nature}</Td>
             <Td key={`${rowIndex}_7`}>

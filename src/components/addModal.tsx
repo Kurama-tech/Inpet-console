@@ -18,7 +18,7 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
     type validateType = "error" | "default" | "success" | "warning" | undefined
     const {state, dispatch} = useContext(Context);
     let validations: validateType[] = [];
-    for (let i = 0; i <= 15; i++) {
+    for (let i = 0; i <= 18; i++) {
         validations[i] = "default"
     }
     function ClearALL(){
@@ -29,6 +29,8 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
         setNature('');
         setSGSTIN('');
         setBankName('');
+        setAccountNum('');
+        setAddressLine('');
         setAccountTyp('');
         setAccountName('');
         setIFSC('');
@@ -52,9 +54,11 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
     const [SGSTIN, setSGSTIN] = useState('');
     const [vSGSTIN, setvSGSTIN] = useState<validateType>("default")
     const [BankName, setBankName] = useState('');
+    const [AccountNumber, setAccountNum] = useState('');
     const [AccountType, setAccountTyp] = useState('');
     const [AccountName, setAccountName] = useState('');
     const [IFSC, setIFSC] = useState('');
+    const [AddressLine, setAddressLine] = useState('');
     const [City, setCity] = useState('');
     const [State, setState] = useState('');
     const [Pincode, setPincode] = useState('');
@@ -72,11 +76,13 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
         setSPhone(data.SPhone ? data.SPhone : '');
         setNature(data.Nature ? data.Nature : '');
         setSGSTIN(data.SGSTIN ? data.SGSTIN : '');
+        setAccountNum(data.BankingDetails['AccountNumber'] ? data.BankingDetails['AccountNumber'] : '')
         setBankName(data.BankingDetails['BankName'] ? data.BankingDetails['BankName'] : '');
         setAccountTyp(data.BankingDetails['AccountType'] ? data.BankingDetails['AccountType'] : '');
         setAccountName(data.BankingDetails['AccountName'] ? data.BankingDetails['AccountName'] : '');
         setIFSC(data.BankingDetails['IFSC'] ? data.BankingDetails['IFSC'] : '');
         setCity(data.SAddress['City']? data.SAddress['City'] : '');
+        setAddressLine(data.SAddress['AddressLine']? data.SAddress['AddressLine'] : '')
         setState(data.SAddress['State']? data.SAddress['State'] : '');
         setPincode(data.SAddress['PinCode']? data.SAddress['PinCode'] : '');
         setCountry(data.SAddress['Country']? data.SAddress['Country'] : '');
@@ -130,7 +136,7 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
         }
     }
     function GSTValidate(value) {
-        if(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}Z[0-9]{1}$/.test(value)){
+        if(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(value)){
             setvSGSTIN("success")
         } else {
             setvSGSTIN("error")
@@ -138,13 +144,13 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
     }
     function onAdd(type, isEdit?:boolean, editID?:string, sid?:string) {
         var mode = 0;
-        if(name === '' ||  SID  === '' || SPhone  === '' || SGSTIN  === '' || City  === '' || State  === '' || Pincode  === '' || Country  === '' || Cname  === '' || CEmail  === '' || CNo  === '' || BankName  === '' || AccountName  === '' || AccountType  === '' || IFSC  === '' || Nature  === '' ){
-            for(let i=0;i<15;i++){
+        if(name === '' ||  SID  === '' || SPhone  === '' || SGSTIN  === '' || City  === '' || State  === '' || Pincode  === '' || Country  === '' || Cname  === '' || CEmail  === '' || CNo  === '' || BankName  === '' || AccountName  === '' || AccountType  === '' || IFSC  === '' || Nature  === '' || AddressLine === '' || AccountNumber === ''){
+            for(let i=0;i<18;i++){
                 setValidInvalid("error", i)
-                setvSGSTIN("error")
-                setSPhoneV("error")
-                setCNoV("error")
             }
+            setvSGSTIN("error")
+            setSPhoneV("error")
+            setCNoV("error")
             return;
         }
         if(type === 'Customers'){
@@ -157,6 +163,7 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
                 SPhone: Number(SPhone),
                 SGSTIN: SGSTIN,
                 SAddress: {
+                    AddressLine: AddressLine,
                     City: City,
                     State: State,
                     PinCode: Number(Pincode),
@@ -168,6 +175,7 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
                     No: Number(CNo)
                 },
                 BankingDetails: {
+                    AccountNumber: AccountNumber,
                     BankName: BankName,
                     AccountName: AccountName,
                     AccountType: AccountType,
@@ -341,7 +349,7 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
                         <FormGroup label="Phone number" isRequired fieldId="grid-form-number-01">
                             <TextInput
                                 isRequired
-                                type="number"
+                                type="tel"
                                 id="grid-form-number-01"
                                 placeholder="555-555-5555"
                                 validated={SPhoneV}
@@ -369,7 +377,7 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
                                             value={BankName}
                                             validated={validated[11]}
                                             onChange={value => {
-                                                setBankName(value);
+                                                setBankName(value); NormalValidate(value, 11)
                                             }}
                                         />
                                     </FormGroup>
@@ -382,6 +390,18 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
                                             value={AccountName}
                                             onChange={value => {
                                                 setAccountName(value); NormalValidate(value, 12)
+                                            }}
+                                        />
+                                    </FormGroup>
+                                    <FormGroup label="Account Number" isRequired fieldId="form-expandable-field-group2-label0">
+                                        <TextInput
+                                            isRequired
+                                            id="form-expandable-field-group2-label0"
+                                            name="form-expandable-field-group2-label0"
+                                            validated={validated[16]}
+                                            value={AccountNumber}
+                                            onChange={value => {
+                                                setAccountNum(value); NormalValidate(value, 16)
                                             }}
                                         />
                                     </FormGroup>
@@ -423,6 +443,18 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
                                 }
                             >
                                 <Grid hasGutter md={6}>
+                                <FormGroup label="Address Line" isRequired fieldId="form-expandable-field-group3-label0">
+                                        <TextInput
+                                            isRequired
+                                            id="form-expandable-field-group3-label0"
+                                            name="form-expandable-field-group3-label0"
+                                            validated={validated[17]}
+                                            value={AddressLine}
+                                            onChange={value => {
+                                                setAddressLine(value); NormalValidate(value, 17)
+                                            }}
+                                        />
+                                    </FormGroup>
                                     <FormGroup label="City" isRequired fieldId="form-expandable-field-group3-label1">
                                         <TextInput
                                             isRequired
@@ -514,7 +546,7 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
                                     <FormGroup label="Number" isRequired fieldId="form-expandable-field-group4-label3">
                                         <TextInput
                                             isRequired
-                                            type="number"
+                                            type="tel"
                                             id="form-expandable-field-group4-label3"
                                             validated={CNoV}
                                             name="form-expandable-field-group4-label3"
