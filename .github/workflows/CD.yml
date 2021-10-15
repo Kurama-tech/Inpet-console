@@ -44,16 +44,16 @@ jobs:
         registry: ${{ env.REGISTRY }}
         username: ${{ env.REGISTRY_USER }}
         password: ${{ env.REGISTRY_PASSWORD }}
-    - name: Install oc
-      uses: redhat-actions/oc-installer@v1
-      with:
-        oc_version: '4.6'
-    - name: Authenticate and set context
-      uses: redhat-actions/oc-login@v1
-      with:
-        openshift_server_url: ${{ env.OPENSHIFT_SERVER }}
-        openshift_token: ${{ env.OPENSHIFT_TOKEN }}
-        insecure_skip_tls_verify: true
-        namespace: ${{ env.OPENSHIFT_NAMESPACE }}
-    - name: Deploy
-      run: oc process --local -f k8s/template.yaml -p IMAGE_TAG=${{ env.TAG }} | oc apply -f -
+    # - name: Install oc
+    #   uses: redhat-actions/oc-installer@v1
+    #   with:
+    #     oc_version: '4.6'
+    # - name: Authenticate and set context
+    #   uses: redhat-actions/oc-login@v1
+    #   with:
+    #     openshift_server_url: ${{ env.OPENSHIFT_SERVER }}
+    #     openshift_token: ${{ env.OPENSHIFT_TOKEN }}
+    #     insecure_skip_tls_verify: true
+    #     namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+    # - name: Deploy
+    #   run: oc process --local -f k8s/template.yaml -p IMAGE_TAG=${{ env.TAG }} | oc apply -f -

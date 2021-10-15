@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Modal, ModalVariant, Button, Form, FormGroup, Grid, GridItem, TextInput, FormFieldGroupExpandable, FormFieldGroupHeader, Alert, FormAlert, getUniqueId, Spinner } from '@patternfly/react-core';
-import { postCallCustSuppliers, putCallCustSupply } from '../services/APIservice';
+import { getCustSuppliers, postCallCustSuppliers, putCallCustSupply } from '../services/APIservice';
 import { Context } from 'src/store/store';
 type ModalType = {
     addORedit: string;
@@ -96,6 +96,23 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
 
     },[data, isEdit])
 
+    function GetCustSuppliers(globalDispatch: any, mode){
+        var Action = "APISuppliers"
+        if(mode === 1){
+            Action = "APICustomers"
+        }
+        //useEffect(()=>{
+            getCustSuppliers(mode).then((res) => {
+                if(res.code === 200){
+                    console.log('here')
+                    globalDispatch({ type: Action, data: res.data });
+                }else {
+                    globalDispatch({ type: "SET_ERROR", data: res });
+                  }
+            });
+        //},[globalDispatch, mode, Action]);
+        
+    }
 
     const [validated, setValidated] = useState<validateType[]>(validations)
 
@@ -195,6 +212,7 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
                             variant: "success"
                         }
                         dispatch({type: "ADD_Alert", data: successAlert});
+                        GetCustSuppliers(dispatch, mode);
                         setProgress(false);
 
                         setisModalOpen(false)
@@ -207,6 +225,7 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
                             key: getUniqueId(),
                             variant: "danger"
                         }
+                        //GetCustSuppliers(dispatch, mode);
                         dispatch({type: "ADD_Alert", data: errorAlert});
                     }
                 });
@@ -223,6 +242,7 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
                         variant: "success"
                     }
                     dispatch({type: "ADD_Alert", data: successAlert});
+                    GetCustSuppliers(dispatch, mode);
                     setProgress(false);
                     setisModalOpen(false)
                 } else {
