@@ -153,7 +153,7 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
         }
     }
     function GSTValidate(value) {
-        if(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}[0-9A-Z]{1}[0-9A-Z]{1}$/.test(value)){
+        if(/\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[A-Z\d]{1}[A-Z\d]{1}$/.test(value)){
             setvSGSTIN("success")
         } else {
             setvSGSTIN("error")
@@ -339,7 +339,7 @@ const AddModal = ({ addORedit, type, isEdit=false, data={}, editID='', sid='', i
                                     validated={vSGSTIN}
                                     aria-describedby="grid-form-name-01-helper"
                                     value={SGSTIN}
-                                    onChange={(value) => { setSGSTIN(value.toUpperCase()); GSTValidate(value) }}
+                                    onChange={(value) => { setSGSTIN(value.toUpperCase()); GSTValidate(value.toUpperCase()) }}
                                 />
                             </FormGroup>
                             <FormGroup label="Nature of Product/Services" isRequired fieldId="grid-form-name-04" helperText="Include your middle name if you have one.">
