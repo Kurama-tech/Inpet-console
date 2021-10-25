@@ -1,24 +1,37 @@
 import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 import { Context } from 'src/store/store';
 import { getCategories} from '../services/APIservice';
-import { ActionGroup, Button, Checkbox, Grid, GridItem, DatePicker, Form, FormGroup, ValidatedOptions, FormHelperText, FormSelect, FormSelectOption, NumberInput, Text, TextArea, TextInput, Wizard, Radio, TextVariants, FormFieldGroupExpandable, FormFieldGroupHeader, Divider, Switch } from '@patternfly/react-core';
+import { ActionGroup, Button, Checkbox, Grid, GridItem, DatePicker, Form, FormGroup, ValidatedOptions, FormHelperText, FormSelect, FormSelectOption, NumberInput, Text, TextArea, TextInput, Wizard, Radio, TextVariants, FormFieldGroupExpandable, FormFieldGroupHeader, Divider, Switch, Alert, FormAlert } from '@patternfly/react-core';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
 
 type ComponentDetailsProps = {
     NumberEntries: Number;
     ModifyData: (index: any, value: any) => void;
+    error: boolean;
 
 }
 
 type LoopRowProps = {
     n: any;
+    error: boolean;
     ModifyData: (index: any, value: any) => void;
 }
 
 const LoopRow = ({n, ModifyData} : LoopRowProps) => {
     const {state, dispatch} = useContext(Context);
     const [Category, setCategory] = useState("Select");
-    const [SpecificD, setSepcificD] = useState<any>({});
+    const [SpecificD, setSepcificD] = useState<any>({
+        Category: "",
+        Comments: "",
+        Description: "",
+        Make: "",
+        Package: "",
+        PartNo: "",
+        Quantity: "",
+        SubCat: "",
+        Termination: "",
+        Value: ""
+    });
     const [SubCat, setSubCat]= useState("Select");
     const [Termination, setTermination] = useState("Select");
     const [Package, setPackage] = useState("Select");
@@ -37,6 +50,8 @@ const LoopRow = ({n, ModifyData} : LoopRowProps) => {
     const [terminationlist, setTerminationList] = useState<any>([]);
     const [packagelist, setpackageList] = useState<any>([]);
     const [SubCats, setSubCats] = useState<any>([]);
+    const [validated, setValidated] = useState<validateType[]>(validations)
+
     
     const HandleChange =(key, value) =>{
         var temp = SpecificD;
@@ -44,8 +59,22 @@ const LoopRow = ({n, ModifyData} : LoopRowProps) => {
         setSepcificD(temp);
         ModifyData(Number(n), temp);
     }
+    function setValidInvalid(mode, index) {
+        var temp = validated;
+        temp[index] = mode;
+        setValidated(temp);
+    }
+    function NormalValidate(value, i) {
+        if (value !== '') {
+            setValidInvalid("success", i)
+        }
+        else{
+            setValidInvalid("error", i)
+        }
+    }
     const onCatSelectChange = (value, event) => {
         setCategory(value);
+        NormalValidate(value, 0)
         HandleChange("Category", value)
         categoriesList.forEach(element => {
             if(element.value === value){
@@ -62,14 +91,17 @@ const LoopRow = ({n, ModifyData} : LoopRowProps) => {
     }
     const onSubCatSelect = (value, event) => {
         setSubCat(value);
+        NormalValidate(value, 1)
         HandleChange("SubCat", value)
     }
     const onTerminationChange = (value, event) => {
         setTermination(value);
+        NormalValidate(value, 2)
         HandleChange("Termination", value)
     }
     const onPackageChange = (value, event) => {
         setPackage(value);
+        NormalValidate(value, 3)
         HandleChange("Package", value)
     }
 
@@ -94,7 +126,7 @@ const LoopRow = ({n, ModifyData} : LoopRowProps) => {
             <Grid hasGutter md={4}>
                 <GridItem>
                 <FormGroup label="Category" fieldId={"Autogen-cat-" + String(n)}>
-                <FormSelect  value={Category} onChange={onCatSelectChange} isRequired aria-label="Select Category">
+                <FormSelect  value={Category} onChange={onCatSelectChange} validated={validated[0]} isRequired aria-label="Select Category">
                     {
                         categoriesList.map((option, index) => (
                             <FormSelectOption isDisabled={option.disabled} key={index} value={option.value} label={option.label} />
@@ -103,7 +135,7 @@ const LoopRow = ({n, ModifyData} : LoopRowProps) => {
                 </FormSelect>
                 </FormGroup>
                 <FormGroup label="Sub Category" fieldId={"Autogen-sub-" + String(n)}>
-                <FormSelect  value={SubCat} onChange={onSubCatSelect} isRequired aria-label="Select Sub Category">
+                <FormSelect  value={SubCat} onChange={onSubCatSelect} validated={validated[1]} isRequired aria-label="Select Sub Category">
                     {
                         SubCats.map((option, index) => (
                             <FormSelectOption isDisabled={option.disabled} key={index} value={option.value} label={option.label} />
@@ -120,7 +152,7 @@ const LoopRow = ({n, ModifyData} : LoopRowProps) => {
                     value={Termination}
                     onChange={(value)=> {setTermination(value); HandleChange("Termination", value)}}
                 /> */}
-                <FormSelect  value={Termination} onChange={onTerminationChange} isRequired aria-label="Select Termination">
+                <FormSelect  value={Termination} onChange={onTerminationChange} validated={validated[2]} isRequired aria-label="Select Termination">
                     {
                         terminationlist.map((option, index) => (
                             <FormSelectOption isDisabled={option.disabled} key={index} value={option.value} label={option.label} />
@@ -137,7 +169,7 @@ const LoopRow = ({n, ModifyData} : LoopRowProps) => {
                     value={Package}
                     onChange={(value)=> {setPackage(value); HandleChange("Package", value)}}
                 /> */}
-                <FormSelect  value={Package} onChange={onPackageChange} isRequired aria-label="Select Package">
+                <FormSelect  value={Package} onChange={onPackageChange} isRequired validated={validated[3]} aria-label="Select Package">
                     {
                         packagelist.map((option, index) => (
                             <FormSelectOption isDisabled={option.disabled} key={index} value={option.value} label={option.label} />
@@ -154,7 +186,8 @@ const LoopRow = ({n, ModifyData} : LoopRowProps) => {
                     id={"simple-form-name-pr-"+ String(n) }
                     name={"simple-form-name-pr-"+ String(n) }
                     value={Pno}
-                    onChange={(value)=> {setPno(value); HandleChange("PartNo", value)}}
+                    validated={validated[4]}
+                    onChange={(value)=> {setPno(value); HandleChange("PartNo", value); NormalValidate(value, 4)}}
                 />
                 </FormGroup>
                 <FormGroup label="Description" fieldId={"Autogen-des" + String(n)}>
@@ -164,7 +197,8 @@ const LoopRow = ({n, ModifyData} : LoopRowProps) => {
                     id={"simple-form-name-d-"+ String(n) }
                     name={"simple-form-name-d-"+ String(n) }
                     value={Description}
-                    onChange={(value)=> {setDescription(value); HandleChange("Description", value)}}
+                    validated={validated[5]}
+                    onChange={(value)=> {setDescription(value); HandleChange("Description", value); NormalValidate(value, 5)}}
                 />
                 </FormGroup>
                 <FormGroup label="Make" fieldId={"Autogen-mke" + String(n)}>
@@ -174,7 +208,8 @@ const LoopRow = ({n, ModifyData} : LoopRowProps) => {
                     id={"simple-form-name-m-"+ String(n) }
                     name={"simple-form-name-m-"+ String(n) }
                     value={Make}
-                    onChange={(value)=> {setMake(value); HandleChange("Make", value)}}
+                    validated={validated[6]}
+                    onChange={(value)=> {setMake(value); HandleChange("Make", value); NormalValidate(value, 6)}}
                 />
                 </FormGroup>
                 <FormGroup label="Value" fieldId={"Autogen-value" + String(n)}>
@@ -183,8 +218,9 @@ const LoopRow = ({n, ModifyData} : LoopRowProps) => {
                     type="text"
                     id={"simple-form-name-"+ String(n) }
                     name={"simple-form-name-"+ String(n) }
+                    validated={validated[7]}
                     value={Value}
-                    onChange={(value)=> {setValue(value); HandleChange("Value", value)}}
+                    onChange={(value)=> {setValue(value); HandleChange("Value", value); NormalValidate(value, 7)}}
                 />
                 </FormGroup>
                 </GridItem>
@@ -197,7 +233,8 @@ const LoopRow = ({n, ModifyData} : LoopRowProps) => {
                     id={"simple-form-name-ct-"+ String(n) }
                     name={"simple-form-name-ct-"+ String(n) }
                     value={Comment}
-                    onChange={(value)=> {setComment(value); HandleChange("Comments", value)}}
+                    validated={validated[8]}
+                    onChange={(value)=> {setComment(value); HandleChange("Comments", value); NormalValidate(value, 8)}}
                 />
                 </FormGroup>
                 <FormGroup label="Quantity" fieldId={"Autogen-qty-" + String(n)}>
@@ -207,7 +244,8 @@ const LoopRow = ({n, ModifyData} : LoopRowProps) => {
                     id={"simple-form-name-qty-"+ String(n) }
                     name={"simple-form-name-qty-"+ String(n) }
                     value={Quantity}
-                    onChange={(value)=> {setQuantity(value); HandleChange("Quantity", value)}}
+                    validated={validated[9]}
+                    onChange={(value)=> {setQuantity(value); HandleChange("Quantity", value); NormalValidate(value, 9)}}
                 />
                 </FormGroup>
                 
@@ -217,7 +255,7 @@ const LoopRow = ({n, ModifyData} : LoopRowProps) => {
         </React.Fragment>
     )
 }
-const GenerateForm = ({n, ModifyDatafunc} : any) => {
+const GenerateForm = ({n, ModifyDatafunc, error} : any) => {
     
     let Generated : any = []
     const [Operation, SetOperation] = useState(true);
@@ -227,7 +265,7 @@ const GenerateForm = ({n, ModifyDatafunc} : any) => {
     
     console.log(n)
     for(let i=0;i<n;i++){
-        Generated.push(<LoopRow n={i} ModifyData={ModifyDatafunc} key={i}></LoopRow>)
+        Generated.push(<LoopRow error={error} n={i} ModifyData={ModifyDatafunc} key={i}></LoopRow>)
     }
     //console.log(Generated)
     return (
@@ -239,16 +277,27 @@ const GenerateForm = ({n, ModifyDatafunc} : any) => {
                     isChecked={Operation}
                     onChange={onOperationChange}
                 />
+                <br />
         <Form>
+        {(error) && (
+                        <FormAlert>
+                            <Alert
+                                variant="danger"
+                                title="Missing Required Feilds"
+                                aria-live="polite"
+                                isInline
+                            />
+                        </FormAlert>
+                    )}
             {Generated}
         </Form></React.Fragment>
     )
 }
 
-const ComponentDetails = ({NumberEntries, ModifyData}: ComponentDetailsProps) => {
+const ComponentDetails = ({NumberEntries, ModifyData, error}: ComponentDetailsProps) => {
     console.log(NumberEntries)
     return (
-        <GenerateForm  n={NumberEntries} ModifyDatafunc={ModifyData} />
+        <GenerateForm  error={error} n={NumberEntries} ModifyDatafunc={ModifyData} />
     )
 }
 export default ComponentDetails;

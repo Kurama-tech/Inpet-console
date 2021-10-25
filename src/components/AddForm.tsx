@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
 
-import { ActionGroup, Button, Checkbox, Grid, GridItem, DatePicker, Form, FormGroup, ValidatedOptions, FormHelperText, FormSelect, FormSelectOption, NumberInput, TextArea, TextInput, Wizard, Radio } from '@patternfly/react-core';
+import { ActionGroup, Button, Checkbox, Grid, GridItem, DatePicker, Form, FormGroup, ValidatedOptions, FormHelperText, FormSelect, FormSelectOption, NumberInput, TextArea, TextInput, Wizard, Radio, WizardContextConsumer, WizardFooter, Alert, FormAlert } from '@patternfly/react-core';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
 import ComponentDetails from './ComponentDetails';
 
@@ -12,16 +12,18 @@ type NumberEntriesProps = {
     onChange: (event: any) => void;
     onDataSet: (event: any) => void;
     onMinus: () => void;
+    error: boolean;
     options: any;
 
 };
 
 
-const NumberEntries = ({ editrole, data, numberE, options, onDataSet, onPlus, onMinus, onChange }: NumberEntriesProps) => {
+const NumberEntries = ({ editrole, data, numberE, options, onDataSet, onPlus, onMinus, onChange, error }: NumberEntriesProps) => {
     const onSetData = (value) => {
         onDataSet(value)
     }
     const [pon, setPon] = useState('');
+    const [name, setname] = useState('');
     const [disableEntry, setDisableEntry] = useState(false);
     
     const dateFormat = date => date.toLocaleDateString();
@@ -43,6 +45,11 @@ const NumberEntries = ({ editrole, data, numberE, options, onDataSet, onPlus, on
         temp[key] = value;
         onSetData(temp);
     }
+    const setName = (value) => {
+        var temp = data;
+        temp['name'] = value;
+        setname(value);
+    }
     const setponR = (value) => {
         var temp = data;
         temp['pon'] = value;
@@ -61,7 +68,18 @@ const NumberEntries = ({ editrole, data, numberE, options, onDataSet, onPlus, on
         
     }
     return (
+        <React.Fragment>
         <Form>
+        {(error) && (
+                        <FormAlert>
+                            <Alert
+                                variant="danger"
+                                title="Missing Required Feilds"
+                                aria-live="polite"
+                                isInline
+                            />
+                        </FormAlert>
+                    )}
             <Checkbox id="check-9"
                 isChecked={disableEntry}
                 label="Via Purchase order"
@@ -131,14 +149,14 @@ const NumberEntries = ({ editrole, data, numberE, options, onDataSet, onPlus, on
             </Grid>
             <FormGroup label="Name" isRequired fieldId="horizontal-form-name" helperText="Enter Name of the Purchase">
                 <TextInput
-                    value={data.name}
+                    value={name}
                     isRequired
                     isDisabled={disableEntry}
                     type="text"
                     id="horizontal-form-name"
                     aria-describedby="horizontal-form-name-helper"
                     name="horizontal-form-name"
-                    onChange={(value) => { ChangeData(value, 'name') }}
+                    onChange={(value) => { setName(value) }}
                 />
             </FormGroup>
             <br />
@@ -157,6 +175,7 @@ const NumberEntries = ({ editrole, data, numberE, options, onDataSet, onPlus, on
                 </FormSelect>
             </FormGroup>
         </Form>
+        </React.Fragment>
     )
 }
 
@@ -165,10 +184,23 @@ const NumberEntries = ({ editrole, data, numberE, options, onDataSet, onPlus, on
 const ComponentAddition = () => {
     const [numberEntries, setnE] = useState(0);
     const [ToSendData, SetToSendData] = useState<any>([])
+    const [error, setError] = useState(false);
     var todayD = new Date();
+    type ArrayType = {
+        Category: String;
+        Comments: String;
+        Description: String;
+        Make: String;
+        Package: String;
+        PartNo: String;
+        Quantity: String;
+        SubCat: String;
+        Termination: String;
+        Value: String;
+    }
     let billno = (Math.random() + 1).toString(36).substring(7);
-    const [data, setData] = useState({ date: todayD.toLocaleDateString(), billdate: todayD.toLocaleDateString(), billno: billno, pon: '' });
-    let DataToSend : Array<any> = [];
+    const [data, setData] = useState({ date: todayD.toLocaleDateString(), billdate: todayD.toLocaleDateString(), billno: billno, pon: '' , name: ''});
+    let DataToSend : Array<ArrayType> = [];
     function ModifyData(index, value){
         DataToSend = ToSendData;
         console.log(index);
@@ -203,17 +235,98 @@ const ComponentAddition = () => {
         setData(value);
     }
     const steps = [
-        { name: 'Supplier Details', component: <NumberEntries editrole={true} data={data} onDataSet={setData1} options={options} numberE={numberEntries} onPlus={onplus} onChange={onChange1} onMinus={onminus} /> },
-        { name: 'Component Details', component: <ComponentDetails NumberEntries={numberEntries} ModifyData={ModifyData} /> },
+        { name: 'Supplier Details', component: <NumberEntries editrole={false} error={error} data={data} onDataSet={setData1} options={options} numberE={numberEntries} onPlus={onplus} onChange={onChange1} onMinus={onminus} /> },
+        { name: 'Component Details', component: <ComponentDetails error={error} NumberEntries={numberEntries} ModifyData={ModifyData} /> },
         { name: 'Review', component: <p>Review step content</p>, nextButtonText: 'Finish' }
     ];
+    function ValidateFirstStep(onNext){
+        if(data.billdate === '' || data.billno === '' || data.name === '' || numberEntries <= 0 ){
+            //set Validation Error Here
+            setError(true);
+        }
+        else{
+            setError(false);
+            onNext();
+        }
+    }
+    function ValidateSecond(onNext){
+            var count = 0;
+            var flag = false;
+            var length = 0;
+            ToSendData.forEach(function (el) {
+                length = Object.keys(el).length
+                Object.keys(el).forEach(function (property) {
+                    console.log(property)
+                  if (el[property] === '') {
+
+                    setError(true);
+                    flag = true
+                  }
+                  else{
+                    count = count + 1
+                  }
+                });
+              });
+              console.log(count);
+            if(!flag && count === length){
+                onNext();
+            }
+        
+        
+    }
     const title = 'Basic wizard';
+    const CustomFooter = (
+        <WizardFooter>
+          <WizardContextConsumer>
+            {({ activeStep, goToStepByName, goToStepById, onNext, onBack, onClose }) => {
+              
+              if (activeStep.name !== 'Review' && activeStep.name === 'Component Details') {
+                return (
+                  <>
+                    <Button variant="primary" type="submit" onClick={()=> {ValidateSecond(onNext)}}>
+                      Proceed
+                    </Button>
+                    <Button variant="secondary" onClick={onBack} className={activeStep.name === 'Step 1' ? 'pf-m-disabled' : ''}>
+                      Back
+                    </Button>
+                    <Button variant="link" onClick={onClose}>
+                      Cancel
+                    </Button>
+                  </>
+                )
+              }
+              else if( activeStep.name === 'Supplier Details'){
+                return (
+                    <>
+                      <Button variant="primary" type="submit" onClick={()=> {ValidateFirstStep(onNext)}}>
+                        Proceed
+                      </Button>
+                      <Button variant="secondary" onClick={onBack} className={activeStep.name === 'Step 1' ? 'pf-m-disabled' : ''}>
+                        Back
+                      </Button>
+                      <Button variant="link" onClick={onClose}>
+                        Cancel
+                      </Button>
+                    </>
+                  )
+              }
+              // Final step buttons
+              return (
+                <>
+                  <Button onClick={() => onNext}>Validate</Button>
+                  <Button onClick={() => goToStepByName('Step 1')}>Go to Beginning</Button>
+                </>
+              )}}
+          </WizardContextConsumer>
+        </WizardFooter>
+      );
 
     return (
         <Wizard
             navAriaLabel={`${title} steps`}
             mainAriaLabel={`${title} content`}
             steps={steps}
+            footer={CustomFooter}
             height={'90%'}
         />
     )
