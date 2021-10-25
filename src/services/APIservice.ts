@@ -23,6 +23,51 @@ async function getCustSuppliers(mode=0){
     return result;
 }
 
+async function getCategories(){
+    const result: ApiResponse = { code: 0, data: {} };
+    let subPath ='/get/categories';
+    const uri = API_URL + subPath;
+    await axios.get(uri).then((res: AxiosResponse) => {
+        result.code = res.status;
+        result.data = res.data;
+    }).catch((err) => {
+        console.log(err);
+        result.code = err.response.status;
+        result.data = err.response.data;
+    });
+    return result;
+}
+
+async function getTermination(){
+    const result: ApiResponse = { code: 0, data: {} };
+    let subPath ='/get/termination';
+    const uri = API_URL + subPath;
+    await axios.get(uri).then((res: AxiosResponse) => {
+        result.code = res.status;
+        result.data = res.data;
+    }).catch((err) => {
+        console.log(err);
+        result.code = err.response.status;
+        result.data = err.response.data;
+    });
+    return result;
+}
+
+async function getPackage(){
+    const result: ApiResponse = { code: 0, data: {} };
+    let subPath ='/get/package';
+    const uri = API_URL + subPath;
+    await axios.get(uri).then((res: AxiosResponse) => {
+        result.code = res.status;
+        result.data = res.data;
+    }).catch((err) => {
+        console.log(err);
+        result.code = err.response.status;
+        result.data = err.response.data;
+    });
+    return result;
+}
+
 async function deleteCustSuppliers(mode=0, id:string){
     const result: ApiResponse = { code: 0, data: {} };
     let subPath ='/delete/supplier/' + id;
@@ -72,4 +117,4 @@ async function putCallCustSupply(id:any, sid:any, data:any, mode=0){
 }
 
 
-export {getCustSuppliers, postCallCustSuppliers, putCallCustSupply, deleteCustSuppliers}
+export {getCustSuppliers, postCallCustSuppliers, putCallCustSupply, deleteCustSuppliers, getCategories, getTermination, getPackage}

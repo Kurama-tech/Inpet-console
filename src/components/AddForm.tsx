@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction, useState } from 'react';
 
 import { ActionGroup, Button, Checkbox, Grid, GridItem, DatePicker, Form, FormGroup, ValidatedOptions, FormHelperText, FormSelect, FormSelectOption, NumberInput, TextArea, TextInput, Wizard, Radio } from '@patternfly/react-core';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
-
+import ComponentDetails from './ComponentDetails';
 
 type NumberEntriesProps = {
     editrole: boolean;
@@ -23,6 +23,7 @@ const NumberEntries = ({ editrole, data, numberE, options, onDataSet, onPlus, on
     }
     const [pon, setPon] = useState('');
     const [disableEntry, setDisableEntry] = useState(false);
+    
     const dateFormat = date => date.toLocaleDateString();
     const dateParse = date => {
         //const split = date.split('/');
@@ -163,10 +164,18 @@ const NumberEntries = ({ editrole, data, numberE, options, onDataSet, onPlus, on
 
 const ComponentAddition = () => {
     const [numberEntries, setnE] = useState(0);
+    const [ToSendData, SetToSendData] = useState<any>([])
     var todayD = new Date();
     let billno = (Math.random() + 1).toString(36).substring(7);
     const [data, setData] = useState({ date: todayD.toLocaleDateString(), billdate: todayD.toLocaleDateString(), billno: billno, pon: '' });
-
+    let DataToSend : Array<any> = [];
+    function ModifyData(index, value){
+        DataToSend = ToSendData;
+        console.log(index);
+        DataToSend.splice(index, 1, value);
+        console.log(DataToSend);
+        SetToSendData(DataToSend);
+    }
     const options = [
         { value: '', label: 'Select one', disabled: false, isPlaceholder: true },
         { value: 'ORDERNO1', label: 'ORDERNO1', disabled: false },
@@ -195,7 +204,7 @@ const ComponentAddition = () => {
     }
     const steps = [
         { name: 'Supplier Details', component: <NumberEntries editrole={true} data={data} onDataSet={setData1} options={options} numberE={numberEntries} onPlus={onplus} onChange={onChange1} onMinus={onminus} /> },
-        { name: 'Component Details', component: <p>Step 2 content</p> },
+        { name: 'Component Details', component: <ComponentDetails NumberEntries={numberEntries} ModifyData={ModifyData} /> },
         { name: 'Review', component: <p>Review step content</p>, nextButtonText: 'Finish' }
     ];
     const title = 'Basic wizard';

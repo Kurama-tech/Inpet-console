@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { useContext, useEffect, useState } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-
+import { getCategories, getPackage, getTermination} from '../services/APIservice';
 import {
     Page,
     PageHeader,
@@ -41,13 +41,41 @@ import { Context } from "src/store/store";
     const logo = (<Brand src={process.env.PUBLIC_URL + '/inpetlogo.png'} alt="Logo" />)
     return (<PageHeader  isNavOpen={isNavO} showNavToggle logo={logo} onNavToggle={setisNavO}><h1 className='font-face-gm'>Inpet Private Limited</h1></PageHeader>);
   };
+
+
   
 const Layout = () => {
 
   const {state, dispatch} = useContext(Context)
-    const [isNavO, setisNavO] = useState(true);
+    const [isNavO, setisNavO] = useState(false);
     const [activeItem, setActiveItem] = useState(0);
     
+    useEffect(()=>{
+      getCategories().then((res) => {
+          if(res.code === 200){
+              console.log(res.data)
+              dispatch({ type: "SET_CAT", data: res.data });
+          }else {
+            dispatch({ type: "SET_ERROR", data: res });
+            }
+      });
+      getTermination().then((res) => {
+        if(res.code === 200){
+            console.log(res.data)
+            dispatch({ type: "SET_TER", data: res.data });
+        }else {
+          dispatch({ type: "SET_ERROR", data: res });
+          }
+    });
+    getPackage().then((res) => {
+      if(res.code === 200){
+          console.log(res.data)
+          dispatch({ type: "SET_PKG", data: res.data });
+      }else {
+        dispatch({ type: "SET_ERROR", data: res });
+        }
+  });
+  },[dispatch]);
 
 
     function onNavToggle(){
