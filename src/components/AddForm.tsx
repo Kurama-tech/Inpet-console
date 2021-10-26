@@ -253,26 +253,30 @@ const ComponentAddition = () => {
             var count = 0;
             var flag = false;
             var length = 0;
-            ToSendData.forEach(function (el) {
-                length = Object.keys(el).length
-                Object.keys(el).forEach(function (property) {
-                    console.log(property)
-                  if (el[property] === '') {
-
-                    setError(true);
-                    flag = true
-                  }
-                  else{
-                    count = count + 1
-                  }
-                });
-              });
-              console.log(count);
-            if(!flag && count === length){
-                onNext();
+            if(ToSendData.length === 0){
+                setError(true);
             }
-        
-        
+            else{
+                ToSendData.forEach(function (el) {
+                    length = length + Object.keys(el).length
+                    Object.keys(el).forEach(function (property) {
+                        console.log(property)
+                      if (el[property] === '') {
+                        setError(true);
+                        flag = true
+                      }
+                      else{
+                        setError(false);
+                        count = count + 1
+                        flag = false
+                      }
+                    });
+                  });
+                  console.log(count);
+                if(!flag && count === length){
+                    onNext();
+                }
+            }    
     }
     const title = 'Basic wizard';
     const CustomFooter = (
@@ -284,7 +288,7 @@ const ComponentAddition = () => {
                 return (
                   <>
                     <Button variant="primary" type="submit" onClick={()=> {ValidateSecond(onNext)}}>
-                      Proceed
+                      Validate and Proceed
                     </Button>
                     <Button variant="secondary" onClick={onBack} className={activeStep.name === 'Step 1' ? 'pf-m-disabled' : ''}>
                       Back
@@ -314,7 +318,7 @@ const ComponentAddition = () => {
               return (
                 <>
                   <Button onClick={() => onNext}>Validate</Button>
-                  <Button onClick={() => goToStepByName('Step 1')}>Go to Beginning</Button>
+                  <Button onClick={() => goToStepByName('Supplier Details')}>Go to Beginning</Button>
                 </>
               )}}
           </WizardContextConsumer>
