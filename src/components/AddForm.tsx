@@ -35,6 +35,21 @@ const NumberEntries = ({Operation, SetOperation, editrole, data, numberE, option
        setName(data.name ? data.name: '') 
     }, [data, setname])
     const dateFormat = date => date.toLocaleDateString();
+    const minDate = new Date(2021, 1, 1);
+    // const maxDate = new Date(2020, 2, 20);
+    var someDate = new Date();
+    var numberOfDaysToAdd = 2; // TODO: MAKE CONSTANT VALUE
+    someDate.setDate(someDate.getDate() + numberOfDaysToAdd); 
+    const rangeValidator = date => {
+        if (date < minDate) {
+        return 'Date is before the allowable range.';
+        }
+        else if (date > someDate) {
+        return 'Date is after the allowable range.';
+        }
+
+        return '';
+    };
     const dateParse = date => {
         //const split = date.split('/');
         //if (split.length !== 3) {
@@ -151,6 +166,7 @@ const NumberEntries = ({Operation, SetOperation, editrole, data, numberE, option
                             isDisabled={disableEntry}
                             /*isDisabled={!editrole}*/
                             onChange={(value) => { ChangeData(value, 'billdate') }}
+                            validators={[rangeValidator]}
                             dateFormat={dateFormat}
                             dateParse={dateParse}
                         />
@@ -316,7 +332,8 @@ const ComponentAddition = () => {
                     length = length + Object.keys(el).length
                     Object.keys(el).forEach(function (property) {
                         console.log(property)
-                      if (el[property] === '') {
+
+                      if (el[property] === '' && property !== 'Comments') {
                         setError(true);
                         flag = true
                       }

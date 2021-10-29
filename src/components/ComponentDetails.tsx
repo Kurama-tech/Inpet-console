@@ -93,6 +93,8 @@ const LoopRow = ({ n, ModifyData, PreData, Operation }: LoopRowProps) => {
         }
         return Number(a) - Number(b);
     }
+
+    
     async function HandleQTYChange(value, Val = Value, DES = Description, Cost = cost, gst = GST) {
         
         setupdating(true)
