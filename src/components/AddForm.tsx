@@ -1,6 +1,6 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
-import { ActionGroup, Button, Checkbox, Grid, GridItem, DatePicker, Form, FormGroup, ValidatedOptions, FormHelperText, FormSelect, FormSelectOption, NumberInput, TextArea, TextInput, Wizard, Radio, WizardContextConsumer, WizardFooter, Alert, FormAlert } from '@patternfly/react-core';
+import { ActionGroup, Button, Checkbox, Grid, GridItem, DatePicker, Form, FormGroup, ValidatedOptions, FormHelperText, FormSelect, FormSelectOption, NumberInput, TextArea, TextInput, Wizard, Radio, WizardContextConsumer, WizardFooter, Alert, FormAlert, WizardHeader, Switch } from '@patternfly/react-core';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
 import ComponentDetails from './ComponentDetails';
 
@@ -14,18 +14,22 @@ type NumberEntriesProps = {
     onMinus: () => void;
     error: boolean;
     options: any;
+    Operation: boolean;
+    SetOperation: (value) => void;
 
 };
 
 
-const NumberEntries = ({ editrole, data, numberE, options, onDataSet, onPlus, onMinus, onChange, error }: NumberEntriesProps) => {
+const NumberEntries = ({Operation, SetOperation, editrole, data, numberE, options, onDataSet, onPlus, onMinus, onChange, error }: NumberEntriesProps) => {
     const onSetData = (value) => {
         onDataSet(value)
     }
     const [pon, setPon] = useState('');
     const [name, setname] = useState('');
     const [disableEntry, setDisableEntry] = useState(false);
-    
+    useEffect(()=>{
+       setName(data.name ? data.name: '') 
+    }, [data, setname])
     const dateFormat = date => date.toLocaleDateString();
     const dateParse = date => {
         //const split = date.split('/');
@@ -42,11 +46,13 @@ const NumberEntries = ({ editrole, data, numberE, options, onDataSet, onPlus, on
 
     const ChangeData = (value, key) => {
         var temp = data;
+        
         temp[key] = value;
         onSetData(temp);
     }
     const setName = (value) => {
         var temp = data;
+        data['name'] = value;
         temp['name'] = value;
         setname(value);
     }
@@ -104,7 +110,7 @@ const NumberEntries = ({ editrole, data, numberE, options, onDataSet, onPlus, on
                         <TextInput
                             value={data.billno}
                             isRequired
-                            isDisabled={!editrole || disableEntry}
+                            isDisabled={false}
                             type="text"
                             id="horizontal-form-name"
                             aria-describedby="horizontal-form-name-helper"
@@ -147,7 +153,16 @@ const NumberEntries = ({ editrole, data, numberE, options, onDataSet, onPlus, on
                     </FormGroup>
                 </GridItem>
             </Grid>
-            <FormGroup label="Name" isRequired fieldId="horizontal-form-name" helperText="Enter Name of the Purchase">
+            <FormGroup label="Recieved/Issued" isRequired isInline fieldId="select-operation">
+            <Switch
+                id="simple-switch"
+                label="Recived"
+                labelOff="Issued"
+                isChecked={Operation}
+                onChange={SetOperation}
+            />
+            </FormGroup>
+            <FormGroup label="Supplier Name" isRequired fieldId="horizontal-form-name" helperText="Enter Name of the Supplier">
                 <TextInput
                     value={name}
                     isRequired
@@ -184,6 +199,10 @@ const NumberEntries = ({ editrole, data, numberE, options, onDataSet, onPlus, on
 const ComponentAddition = () => {
     const [numberEntries, setnE] = useState(0);
     const [ToSendData, SetToSendData] = useState<any>([])
+    const [Operation, SetOperation] = useState(true);
+    const onOperationChange = (value) => {
+        SetOperation(value)
+    }
     const [error, setError] = useState(false);
     var todayD = new Date();
     type ArrayType = {
@@ -235,8 +254,8 @@ const ComponentAddition = () => {
         setData(value);
     }
     const steps = [
-        { name: 'Supplier Details', component: <NumberEntries editrole={false} error={error} data={data} onDataSet={setData1} options={options} numberE={numberEntries} onPlus={onplus} onChange={onChange1} onMinus={onminus} /> },
-        { name: 'Component Details', component: <ComponentDetails error={error} NumberEntries={numberEntries} ModifyData={ModifyData} /> },
+        { name: 'Bill Details', component: <NumberEntries Operation={Operation} SetOperation={onOperationChange}  editrole={false} error={error} data={data} onDataSet={setData1} options={options} numberE={numberEntries} onPlus={onplus} onChange={onChange1} onMinus={onminus} /> },
+        { name: 'Component Details', component: <ComponentDetails Operation={Operation} SetOperation={onOperationChange} ToSendData={ToSendData} error={error} NumberEntries={numberEntries} ModifyData={ModifyData} /> },
         { name: 'Review', component: <p>Review step content</p>, nextButtonText: 'Finish' }
     ];
     function ValidateFirstStep(onNext){
@@ -299,13 +318,13 @@ const ComponentAddition = () => {
                   </>
                 )
               }
-              else if( activeStep.name === 'Supplier Details'){
+              else if( activeStep.name === 'Bill Details'){
                 return (
                     <>
                       <Button variant="primary" type="submit" onClick={()=> {ValidateFirstStep(onNext)}}>
                         Proceed
                       </Button>
-                      <Button variant="secondary" onClick={onBack} className={activeStep.name === 'Step 1' ? 'pf-m-disabled' : ''}>
+                      <Button variant="secondary" onClick={onBack} className={activeStep.name === 'Bill Details' ? 'pf-m-disabled' : ''}>
                         Back
                       </Button>
                       <Button variant="link" onClick={onClose}>
@@ -317,8 +336,11 @@ const ComponentAddition = () => {
               // Final step buttons
               return (
                 <>
-                  <Button onClick={() => onNext}>Validate</Button>
-                  <Button onClick={() => goToStepByName('Supplier Details')}>Go to Beginning</Button>
+                  <Button variant="primary" type="submit" onClick={() => onNext}>Submit</Button>
+                  <Button variant="secondary" onClick={onBack} className={activeStep.name === 'Bill Details' ? 'pf-m-disabled' : ''}>
+                        Back
+                  </Button>
+                  <Button onClick={() => goToStepByName('Bill Details')}>Go to Beginning</Button>
                 </>
               )}}
           </WizardContextConsumer>
@@ -327,6 +349,7 @@ const ComponentAddition = () => {
 
     return (
         <Wizard
+            
             navAriaLabel={`${title} steps`}
             mainAriaLabel={`${title} content`}
             steps={steps}
