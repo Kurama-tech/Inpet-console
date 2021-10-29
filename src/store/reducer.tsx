@@ -11,6 +11,7 @@ export interface StateContext {
     trimcategories: [];
     package: [];
     termination: [];
+    inventory: [];
 }
 
 function PreCat(data) {
@@ -67,6 +68,11 @@ const Reducer = (state, action) => {
                 ...state,
                 categories: action.data,
                 trimcategories: PreCat(action.data)
+            }
+        case 'SET_INV':
+            return {
+                ...state,
+                inventory: action.data
             }
         case 'SET_TER':
             return {

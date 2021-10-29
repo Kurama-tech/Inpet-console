@@ -130,6 +130,7 @@ const LoopRow = ({ n, ModifyData, PreData, Operation }: LoopRowProps) => {
                         var previousQTY = resp.data.totalQTY
                         console.log(value)
                         setPrevQTY(previousQTY);
+                        HandleChange("PREVIOUSQTY", previousQTY)
                         previousQTY = runOperation(Operation, previousQTY, value);
                         console.log(previousQTY)
                         if (previousQTY < 0) {
@@ -145,6 +146,14 @@ const LoopRow = ({ n, ModifyData, PreData, Operation }: LoopRowProps) => {
                             var total = gstamt + subtotal;
                             console.log(total)
                             setTotal(total);
+                            HandleChange("Total", total)
+                            HandleChange("SubTotal", subtotal)
+                            HandleChange("Cost", Cost)
+                            HandleChange("GST", gst)
+                            HandleChange("GSTAMT", gstamt)
+                            
+                            HandleChange("CalculatedQTY", previousQTY)
+
                             
                         }
                         setupdating(false)
@@ -390,7 +399,7 @@ const LoopRow = ({ n, ModifyData, PreData, Operation }: LoopRowProps) => {
                         <FormGroup label="Cost" fieldId={"Autogen-cst-" + String(n)}>
                             <TextInput
                                 isRequired
-                                type="text"
+                                type="number"
                                 id={"simple-form-name-ct-" + String(n)}
                                 name={"simple-form-name-ct-" + String(n)}
                                 value={cost}
@@ -401,7 +410,7 @@ const LoopRow = ({ n, ModifyData, PreData, Operation }: LoopRowProps) => {
                         <FormGroup label="GST %" fieldId={"Autogen-gst-" + String(n)}>
                             <TextInput
                                 isRequired
-                                type="text"
+                                type="number"
                                 id={"simple-form-name-ct-" + String(n)}
                                 name={"simple-form-name-ct-" + String(n)}
                                 value={GST}

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { useContext, useEffect, useState } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-import { getCategories, getPackage, getTermination} from '../services/APIservice';
+import { getCategories, getPackage, getTermination, getInventoryItems} from '../services/APIservice';
 import {
     Page,
     PageHeader,
@@ -51,6 +51,14 @@ const Layout = () => {
     const [activeItem, setActiveItem] = useState(0);
     
     useEffect(()=>{
+      getInventoryItems().then((res) => {
+        if(res.code === 200){
+            console.log(res.data)
+            dispatch({ type: "SET_INV", data: res.data });
+        }else {
+          dispatch({ type: "SET_ERROR", data: res });
+          }
+    });
       getCategories().then((res) => {
           if(res.code === 200){
               console.log(res.data)

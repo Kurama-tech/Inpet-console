@@ -1,8 +1,12 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 
-import { ActionGroup, Button, Checkbox, Grid, GridItem, DatePicker, Form, FormGroup, ValidatedOptions, FormHelperText, FormSelect, FormSelectOption, NumberInput, TextArea, TextInput, Wizard, Radio, WizardContextConsumer, WizardFooter, Alert, FormAlert, WizardHeader, Switch } from '@patternfly/react-core';
+import { ActionGroup, Button, Checkbox, Grid, GridItem, DatePicker, Form, FormGroup, ValidatedOptions, FormHelperText, FormSelect, FormSelectOption, NumberInput, TextArea, TextInput, Wizard, Radio, WizardContextConsumer, WizardFooter, Alert, FormAlert, WizardHeader, Switch, getUniqueId, Spinner } from '@patternfly/react-core';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
 import ComponentDetails from './ComponentDetails';
+import Review from './Review';
+import { Context } from "src/store/store";
+import { getInventoryItems, postCallInventoryBatch } from 'src/services/APIservice';
+import Finish from './Finish';
 
 type NumberEntriesProps = {
     editrole: boolean;
@@ -198,7 +202,10 @@ const NumberEntries = ({Operation, SetOperation, editrole, data, numberE, option
 
 const ComponentAddition = () => {
     const [numberEntries, setnE] = useState(0);
+    const [Progress, setProgress] = useState(false);
+    const {state, dispatch} = useContext(Context)
     const [ToSendData, SetToSendData] = useState<any>([])
+    const [ReviewedAPID, setReviewAPID] = useState<any>([])
     const [Operation, SetOperation] = useState(true);
     const onOperationChange = (value) => {
         SetOperation(value)
@@ -256,7 +263,8 @@ const ComponentAddition = () => {
     const steps = [
         { name: 'Bill Details', component: <NumberEntries Operation={Operation} SetOperation={onOperationChange}  editrole={false} error={error} data={data} onDataSet={setData1} options={options} numberE={numberEntries} onPlus={onplus} onChange={onChange1} onMinus={onminus} /> },
         { name: 'Component Details', component: <ComponentDetails Operation={Operation} SetOperation={onOperationChange} ToSendData={ToSendData} error={error} NumberEntries={numberEntries} ModifyData={ModifyData} /> },
-        { name: 'Review', component: <p>Review step content</p>, nextButtonText: 'Finish' }
+        { name: 'Review', component: <Review data={data} ToSendData={ToSendData} setReviewAPID={setReviewAPID} Operation={Operation} NumberEntries={numberEntries} /> , nextButtonText: 'Finish' },
+        {name: 'Finished', component: <Finish/>, isFinishedStep: true}
     ];
     function ValidateFirstStep(onNext){
         if(data.billdate === '' || data.billno === '' || data.name === '' || numberEntries <= 0 ){
@@ -267,6 +275,34 @@ const ComponentAddition = () => {
             setError(false);
             onNext();
         }
+    }
+    async function InsertintoInv(data=ReviewedAPID, onNext){
+        await postCallInventoryBatch(data).then((res) => {
+            setProgress(true);
+            if (res.code === 200) {
+                const successAlert = {
+                    title: "["+ res.code + "] Add Inventory Success!",
+                    details: res.data.toString(),
+                    key: getUniqueId(),
+                    variant: "success"
+                }
+                dispatch({type: "ADD_Alert", data: successAlert});
+                getInventoryItems()
+                setProgress(false);
+                onNext();
+                // setisModalOpen(false)
+            } else {
+                setProgress(false);
+                // setisModalOpen(false);
+                const errorAlert = {
+                    title: "["+ res.code + "] Add Inventory Error!",
+                    details: res.data.toString(),
+                    key: getUniqueId(),
+                    variant: "danger"
+                }
+                dispatch({type: "ADD_Alert", data: errorAlert});
+            }
+        });
     }
     function ValidateSecond(onNext){
             var count = 0;
@@ -336,7 +372,7 @@ const ComponentAddition = () => {
               // Final step buttons
               return (
                 <>
-                  <Button variant="primary" type="submit" onClick={() => onNext}>Submit</Button>
+                  <Button variant="primary" type="submit" onClick={() => InsertintoInv(ReviewedAPID, onNext)}>Submit</Button>
                   <Button variant="secondary" onClick={onBack} className={activeStep.name === 'Bill Details' ? 'pf-m-disabled' : ''}>
                         Back
                   </Button>
@@ -348,6 +384,7 @@ const ComponentAddition = () => {
       );
 
     return (
+        <React.Fragment>
         <Wizard
             
             navAriaLabel={`${title} steps`}
@@ -355,7 +392,10 @@ const ComponentAddition = () => {
             steps={steps}
             footer={CustomFooter}
             height={'90%'}
-        />
+        >{Progress &&(
+            <Spinner isSVG diameter="80px" />
+        )}
+            </Wizard></React.Fragment>
     )
 }
 

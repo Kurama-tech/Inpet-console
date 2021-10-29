@@ -53,6 +53,21 @@ async function getCategories(){
     return result;
 }
 
+async function getInventoryItems(){
+    const result: ApiResponse = { code: 0, data: {} };
+    let subPath ='/get/inventory/all';
+    const uri = API_URL + subPath;
+    await axios.get(uri).then((res: AxiosResponse) => {
+        result.code = res.status;
+        result.data = res.data;
+    }).catch((err) => {
+        console.log(err);
+        result.code = err.response.status;
+        result.data = err.response.data;
+    });
+    return result;
+}
+
 async function getTermination(){
     const result: ApiResponse = { code: 0, data: {} };
     let subPath ='/get/termination';
@@ -115,6 +130,21 @@ async function postCallCustSuppliers(data :any, mode=0){
     return result;
 }
 
+async function postCallInventoryBatch(data :any){
+    const result: ApiResponse = { code: 0, data: {} };
+    let subPath = '/add/inventoryEntry/Batch';
+    const uri = API_URL + subPath;
+    await axios.post(uri, data).then((res: AxiosResponse) => {
+        result.code = res.status;
+        result.data = res.data;
+    }).catch((err) => {
+        console.log(err);
+        result.code = err.response.status;
+        result.data = err.response.data;
+    });
+    return result;
+}
+
 async function putCallCustSupply(id:any, sid:any, data:any, mode=0){
     const result: ApiResponse = { code: 0, data: {} };
     let subPath = '/edit/supplier/'+ id+ '/' + sid;
@@ -132,4 +162,4 @@ async function putCallCustSupply(id:any, sid:any, data:any, mode=0){
 }
 
 
-export {getCustSuppliers, postCallCustSuppliers, putCallCustSupply, deleteCustSuppliers, getCategories, getTermination, getPackage, getQTYfromValueDescription}
+export {getCustSuppliers,getInventoryItems, postCallCustSuppliers, postCallInventoryBatch, putCallCustSupply, deleteCustSuppliers, getCategories, getTermination, getPackage, getQTYfromValueDescription}

@@ -1,0 +1,29 @@
+[
+    {
+        "BDate" : "29/10/2021",
+        "BillNo": "xx4qj",
+        "CalculatedQTY": 2,
+        "Category": "Resistors",
+        "Comments": "helloo",
+        "Cost": 500,
+        "Date": "29/10/2021",
+        "Description": "d",
+        "EntryNumber": 0,
+        "GST": 18,
+        "GSTAMT": 180,
+        "Make": "d",
+        "Name": "Meer",
+        "PO": "",
+        "Package": "Axial",
+        "PartNo": "t",
+        "Project": "d",
+        "Quantity": "2",
+        "SubCat": "Carbon Film",
+        "SubTotal": 1000,
+        "Termination": "Through Hole",
+        "Total": 1180,
+        "TotalNumberEntries": 1,
+        "TotalQATM": 0,
+        "Value": "d"
+    }
+]
