@@ -18,7 +18,8 @@ import {
     Text,
     AlertActionCloseButton,
     AlertGroup,
-    AlertVariant
+    AlertVariant,
+    NavExpandable
   } from '@patternfly/react-core';
   import './Layout.css';
   import './input.tsx'
@@ -29,6 +30,7 @@ import Supplier from "./Supplier";
 import Customer from "./Customer";
 import Dashboard from "./Dashboard";
 import { Context } from "src/store/store";
+import Inventory from "./InventoryView";
 
   type NavigationBarProps = {
     Company: string;
@@ -98,9 +100,13 @@ const Layout = () => {
         <NavItem itemId={0} isActive={activeItem === 0} ><Link to ="/">Dashboard</Link></NavItem>
         <NavItem itemId={1} isActive={activeItem === 1} ><Link to ="/supplier">Supplier Master</Link></NavItem>
         <NavItem itemId={2} isActive={activeItem === 2} ><Link to ="/customer">Customer Master</Link></NavItem>
-          <NavItem itemId={3} isActive={activeItem === 3} ><Link to ="/inventory">Inventory</Link></NavItem>
-          <NavItem itemId={4} isActive={activeItem === 4}><Link to ="/report" >Report</Link></NavItem>
-          <NavItem itemId={5} isActive={activeItem === 5}><Link to ="/output" >Search</Link></NavItem>
+        <NavExpandable title="Inventory" srText="Inventory" groupId="grp-1" isExpanded>
+          <NavItem itemId={3} isActive={activeItem === 3} ><Link to ="/inventory">Entry</Link></NavItem>
+          <NavItem itemId={4} isActive={activeItem === 4} ><Link to ="/inventory/view">View</Link></NavItem>
+        </NavExpandable>
+          
+          <NavItem itemId={5} isActive={activeItem === 5}><Link to ="/report" >Report</Link></NavItem>
+          <NavItem itemId={6} isActive={activeItem === 6}><Link to ="/output" >Search</Link></NavItem>
         </NavList>
         
         
@@ -137,6 +143,7 @@ const Layout = () => {
         <Route exact path='/inventory'><InputInventory /></Route>
         <Route exact path='/report'><ReportInventory /></Route>
         <Route exact path='/output'><OutputInventory /> </Route>
+        <Route exact path="/inventory/view"><Inventory /></Route>
         </Switch> 
       </PageSection>
     </Page>
